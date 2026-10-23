@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+@theme inline { --font-sans: var(--font-body); }
+@layer base {
+  :root { --bg:#FFE4D2; --surface:#FFF4EA; --teal:#25756D; --teal-dark:#1B5852; --orange:#F26D3D; --ink:#2B2B2B; --muted:#67564c; --positive:#2E7D32; --negative:#C0392B; }
+  body {background:var(--bg);color:var(--ink);font-family:var(--font-body),sans-serif;font-size:16px;}
+  h1,h2,h3 {font-family:var(--font-heading),sans-serif;}
+  h1 {font-size:28px;} h2 {font-size:20px;}
+  button,a,input { -webkit-tap-highlight-color:transparent; }
+  button,a {touch-action:manipulation;}
+  button {cursor:pointer;} button:disabled {cursor:default;opacity:.4;}
+  :focus-visible {outline:3px solid var(--teal);outline-offset:4px;}
+  input {min-height:48px;border:1px solid #a48f80;border-radius:12px;background:#fffaf5;padding:10px 14px;width:100%;}
+  button,a {transition:background-color 150ms,transform 150ms;}
+  dialog {margin:auto;max-width:min(92vw,480px);border-radius:20px;background:var(--surface);padding:24px;color:var(--ink);box-shadow:0 20px 80px #0003;}
+  dialog::backdrop {background:#1b373780;}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after {transition:none!important;scroll-behavior:auto!important;}}
+}

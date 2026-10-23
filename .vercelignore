@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+docs/reference
+public/assets/tokens/*.png
+test-results
+playwright-report
+coverage
