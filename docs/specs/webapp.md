@@ -1,6 +1,6 @@
 # Farm Hand Tracker — Especificação Completa do WebApp
 
-*Versão 1.0 · Produto em pt-BR · Documento para IA de desenvolvimento executar de forma autônoma, sem pedir aprovações*
+_Versão 1.0 · Produto em pt-BR · Documento para IA de desenvolvimento executar de forma autônoma, sem pedir aprovações_
 
 ## 0. Protocolo de execução (ler primeiro)
 
@@ -20,17 +20,17 @@
 
 **Em uma frase:** cada jogador tem 3 contadores (imagem do token + botões − e +), com menu inicial, regras sempre à mão e ferramentas de apoio à rodada.
 
-| # | Funcionalidade | Tela |
-| --- | --- | --- |
-| F1 | Menu inicial com acesso ao contador e às regras | `/` |
-| F2 | Configuração de partida: 2 a 5 jogadores, nomes, primeiro dealer, modo solo | `/jogo/novo/` |
-| F3 | Contador de tokens por jogador (somente imagem + − / +), total automático e ranking | `/jogo/` |
-| F4 | Painel da rodada: cartas por jogador, dealer, quem inicia, lances, vazas e pontos calculados | `/rodada/` |
-| F5 | Guia de cartas com marcação de cartas vistas e contagem do que resta por número | `/cartas/` |
-| F6 | Regras completas em pt-BR, com busca e resumo rápido | `/regras/` |
-| F7 | Mac e Donald (jogadores fictícios) com lances automáticos | F2 e F4 |
-| F8 | Fim de jogo com ranking, desempate e meta solo de 21 pontos | `/fim/` |
-| F9 | Persistência local, PWA offline, tela sempre ligada, vibração | `/ajustes/` |
+| #   | Funcionalidade                                                                               | Tela          |
+| --- | -------------------------------------------------------------------------------------------- | ------------- |
+| F1  | Menu inicial com acesso ao contador e às regras                                              | `/`           |
+| F2  | Configuração de partida: 2 a 5 jogadores, nomes, primeiro dealer, modo solo                  | `/jogo/novo/` |
+| F3  | Contador de tokens por jogador (somente imagem + − / +), total automático e ranking          | `/jogo/`      |
+| F4  | Painel da rodada: cartas por jogador, dealer, quem inicia, lances, vazas e pontos calculados | `/rodada/`    |
+| F5  | Guia de cartas com marcação de cartas vistas e contagem do que resta por número              | `/cartas/`    |
+| F6  | Regras completas em pt-BR, com busca e resumo rápido                                         | `/regras/`    |
+| F7  | Mac e Donald (jogadores fictícios) com lances automáticos                                    | F2 e F4       |
+| F8  | Fim de jogo com ranking, desempate e meta solo de 21 pontos                                  | `/fim/`       |
+| F9  | Persistência local, PWA offline, tela sempre ligada, vibração                                | `/ajustes/`   |
 
 ## 2. Fatos do jogo (fonte: manual oficial em inglês)
 
@@ -38,11 +38,11 @@
 
 O manual lista 48 tokens de pontuação “valorados 5 / 1 / −1”. Eles registram a pontuação de cada jogador.
 
-| id | Nome no app | Valor | Como identificar a imagem | Arquivo |
-| --- | --- | --- | --- | --- |
-| `saco` | Saco de grãos | +5 | saco bege de estopa com o número 5 | `public/assets/tokens/saco-5.png` |
-| `espiga` | Espiga | +1 | espiga (folha) de trigo dourada com o número 1 | `public/assets/tokens/espiga-1.png` |
-| `rato` | Rato | −1 | rato cinza com “-1” em vermelho | `public/assets/tokens/rato-menos-1.png` |
+| id       | Nome no app   | Valor | Como identificar a imagem                      | Arquivo                                 |
+| -------- | ------------- | ----- | ---------------------------------------------- | --------------------------------------- |
+| `saco`   | Saco de grãos | +5    | saco bege de estopa com o número 5             | `public/assets/tokens/saco-5.png`       |
+| `espiga` | Espiga        | +1    | espiga (folha) de trigo dourada com o número 1 | `public/assets/tokens/espiga-1.png`     |
+| `rato`   | Rato          | −1    | rato cinza com “-1” em vermelho                | `public/assets/tokens/rato-menos-1.png` |
 
 - Pontuação total do jogador = `5 × sacos + 1 × espigas − 1 × ratos`. Pode ser negativa (o manual permite).
 - O manual **não informa** quantos tokens de cada tipo existem. Decisão: estoque ilimitado no app; limite técnico de 99 por contador.
@@ -56,36 +56,36 @@ O manual lista 48 tokens de pontuação “valorados 5 / 1 / −1”. Eles regis
 
 Cada número de 1 a 7 existe em exatamente 3 naipes. Não há trunfo.
 
-| Naipe (cor) | Números | Qtde |
-| --- | --- | --- |
-| Menta (verde-água) | 1, 3, 4, 5, 6 | 5 |
-| Laranja | 2, 7 | 2 |
-| Azul | 1, 2, 3, 4, 5, 7 | 6 |
-| Amarelo | 1, 4, 7 | 3 |
-| Lima (verde-limão) | 2, 3, 5, 6 | 4 |
-| Rosa | 6 | 1 |
+| Naipe (cor)        | Números          | Qtde |
+| ------------------ | ---------------- | ---- |
+| Menta (verde-água) | 1, 3, 4, 5, 6    | 5    |
+| Laranja            | 2, 7             | 2    |
+| Azul               | 1, 2, 3, 4, 5, 7 | 6    |
+| Amarelo            | 1, 4, 7          | 3    |
+| Lima (verde-limão) | 2, 3, 5, 6       | 4    |
+| Rosa               | 6                | 1    |
 
 ### 2.4 Cartas por jogador em cada rodada
 
 A contagem de jogadores inclui Mac e Donald.
 
 | Rodada | 2–3 jogadores | 4 jogadores | 5 jogadores |
-| --- | --- | --- | --- |
-| 1 | 1 | 1 | 1 |
-| 2 | 2 | 2 | 2 |
-| 3 | 3 | 3 | 3 |
-| 4 | 4 | 4 | 4 |
-| 5 | 5 | 5 | 4 |
-| 6 | 6 | 5 | 4 |
+| ------ | ------------- | ----------- | ----------- |
+| 1      | 1             | 1           | 1           |
+| 2      | 2             | 2           | 2           |
+| 3      | 3             | 3           | 3           |
+| 4      | 4             | 4           | 4           |
+| 5      | 5             | 5           | 4           |
+| 6      | 6             | 5           | 4           |
 
 Cartas não distribuídas na rodada = `21 − (jogadores × cartas por jogador)`. A quantidade de vazas da rodada é igual às cartas por jogador.
 
 ### 2.5 Lances fixos dos jogadores fictícios
 
-| Rodada | 1 | 2 | 3 | 4 | 5 | 6 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Mac | 0 | 1 | 0 | 2 | 0 | 3 |
-| Donald | 1 | 0 | 1 | 0 | 2 | 0 |
+| Rodada | 1   | 2   | 3   | 4   | 5   | 6   |
+| ------ | --- | --- | --- | --- | --- | --- |
+| Mac    | 0   | 1   | 0   | 2   | 0   | 3   |
+| Donald | 1   | 0   | 1   | 0   | 2   | 0   |
 
 Na partida de 2 jogadores só o Mac existe; o Donald só existe no solo.
 
@@ -97,45 +97,45 @@ Na partida de 2 jogadores só o Mac existe; o Donald só existe no solo.
 
 ### 2.7 Lacunas do manual e decisões do app
 
-| Lacuna | Decisão |
-| --- | --- |
-| Quantos tokens de cada tipo existem | Ilimitado; máximo 99 por contador |
-| Como representar pontos em tokens | Positivos viram sacos + espigas (menos tokens possível); negativos viram ratos; contadores também são editáveis à mão |
-| Dealer no modo solo | Não existe; o app mostra só quem inicia, conforme o manual |
-| Empate: pontos da rodada 6 original | Mantidos; a rodada extra soma por cima, vale 6 pontos e mantém dealer e quem inicia da rodada 6 |
-| Restrição entre lances (ex.: soma dos lances) | Não existe no manual; o app não restringe |
+| Lacuna                                        | Decisão                                                                                                               |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Quantos tokens de cada tipo existem           | Ilimitado; máximo 99 por contador                                                                                     |
+| Como representar pontos em tokens             | Positivos viram sacos + espigas (menos tokens possível); negativos viram ratos; contadores também são editáveis à mão |
+| Dealer no modo solo                           | Não existe; o app mostra só quem inicia, conforme o manual                                                            |
+| Empate: pontos da rodada 6 original           | Mantidos; a rodada extra soma por cima, vale 6 pontos e mantém dealer e quem inicia da rodada 6                       |
+| Restrição entre lances (ex.: soma dos lances) | Não existe no manual; o app não restringe                                                                             |
 
 ## 3. Decisões fechadas
 
-| Tema | Decisão |
-| --- | --- |
-| Jogadores (partida padrão) | Mínimo 2, máximo 5 humanos |
-| 2 humanos | Mac entra automaticamente (obrigatório pelo manual) → 3 cartões; ordem horária J1 → J2 → Mac; J1 é o primeiro dealer |
-| Solo | 1 humano (“Você”) + Mac + Donald → 3 cartões; meta de 21 pontos |
-| Contador | 3 tipos de token por jogador; faixa 0–99; cada contador exibe apenas a imagem do token, a quantidade numérica e os botões − e +; nenhum rótulo textual do token na tela |
-| Total | Exibido no cabeçalho do cartão do jogador |
-| Idioma | Somente pt-BR; “trick” = “vaza” |
-| Tema | Somente claro, com a paleta do manual (seção 8) |
-| Dados | `localStorage`; sem backend, login ou analytics |
-| Offline | PWA instalável com service worker escrito à mão |
-| Orientação | Mobile-first em retrato; funciona em tablet e desktop |
-| Nome de jogador | 1–16 caracteres, únicos (ignora maiúsculas), padrão “Jogador N” |
-| Deploy | Export estático (`output: 'export'`), hospedável na Vercel ou em qualquer CDN |
+| Tema                       | Decisão                                                                                                                                                                 |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Jogadores (partida padrão) | Mínimo 2, máximo 5 humanos                                                                                                                                              |
+| 2 humanos                  | Mac entra automaticamente (obrigatório pelo manual) → 3 cartões; ordem horária J1 → J2 → Mac; J1 é o primeiro dealer                                                    |
+| Solo                       | 1 humano (“Você”) + Mac + Donald → 3 cartões; meta de 21 pontos                                                                                                         |
+| Contador                   | 3 tipos de token por jogador; faixa 0–99; cada contador exibe apenas a imagem do token, a quantidade numérica e os botões − e +; nenhum rótulo textual do token na tela |
+| Total                      | Exibido no cabeçalho do cartão do jogador                                                                                                                               |
+| Idioma                     | Somente pt-BR; “trick” = “vaza”                                                                                                                                         |
+| Tema                       | Somente claro, com a paleta do manual (seção 8)                                                                                                                         |
+| Dados                      | `localStorage`; sem backend, login ou analytics                                                                                                                         |
+| Offline                    | PWA instalável com service worker escrito à mão                                                                                                                         |
+| Orientação                 | Mobile-first em retrato; funciona em tablet e desktop                                                                                                                   |
+| Nome de jogador            | 1–16 caracteres, únicos (ignora maiúsculas), padrão “Jogador N”                                                                                                         |
+| Deploy                     | Export estático (`output: 'export'`), hospedável na Vercel ou em qualquer CDN                                                                                           |
 
 ## 4. Stack e arquitetura
 
-| Item | Escolha | Em termos práticos |
-| --- | --- | --- |
-| Framework | Next.js 15 (App Router), React 19, TypeScript estrito | Estrutura de páginas pronta; roda como site estático |
-| Export estático | `output: 'export'`, `trailingSlash: true`, `images.unoptimized: true` | Gera só HTML/JS/CSS; sem servidor para manter |
-| Estilo | Tailwind CSS 4 | Estilos nas próprias classes; sem CSS solto |
-| Estado | Zustand 5 com middleware `persist` (localStorage) | Um cofre global que sobrevive a recarregar a página |
-| Ícones | `lucide-react` | Ícones do menu e dos botões |
-| Fontes | `next/font/google`: Josefin Sans (corpo) e Chango (títulos) | Visual parecido com o do manual; fontes embutidas no build |
-| Testes unitários | Vitest | Conferem contas e regras sem abrir navegador |
-| Testes E2E | Playwright (Chromium; viewports 390×844 e 1280×800) | Um robô usa o app como o jogador usa |
-| Qualidade | ESLint, Prettier, `tsc --noEmit` | Pega erro antes de rodar |
-| PWA | `public/manifest.webmanifest` + `public/sw.js` escrito à mão | Instala na tela inicial e abre sem internet |
+| Item             | Escolha                                                               | Em termos práticos                                         |
+| ---------------- | --------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Framework        | Next.js 15 (App Router), React 19, TypeScript estrito                 | Estrutura de páginas pronta; roda como site estático       |
+| Export estático  | `output: 'export'`, `trailingSlash: true`, `images.unoptimized: true` | Gera só HTML/JS/CSS; sem servidor para manter              |
+| Estilo           | Tailwind CSS 4                                                        | Estilos nas próprias classes; sem CSS solto                |
+| Estado           | Zustand 5 com middleware `persist` (localStorage)                     | Um cofre global que sobrevive a recarregar a página        |
+| Ícones           | `lucide-react`                                                        | Ícones do menu e dos botões                                |
+| Fontes           | `next/font/google`: Josefin Sans (corpo) e Chango (títulos)           | Visual parecido com o do manual; fontes embutidas no build |
+| Testes unitários | Vitest                                                                | Conferem contas e regras sem abrir navegador               |
+| Testes E2E       | Playwright (Chromium; viewports 390×844 e 1280×800)                   | Um robô usa o app como o jogador usa                       |
+| Qualidade        | ESLint, Prettier, `tsc --noEmit`                                      | Pega erro antes de rodar                                   |
+| PWA              | `public/manifest.webmanifest` + `public/sw.js` escrito à mão          | Instala na tela inicial e abre sem internet                |
 
 Scripts do `package.json`: `dev`, `build`, `start`, `lint`, `typecheck`, `test`, `test:e2e`, `icons`.
 
@@ -168,7 +168,11 @@ README.md, DECISIONS.md
 ```ts
 export type TokenType = 'saco' | 'espiga' | 'rato';
 export const TOKEN_ORDER: TokenType[] = ['saco', 'espiga', 'rato'];
-export const TOKEN_VALUE: Record<TokenType, number> = { saco: 5, espiga: 1, rato: -1 };
+export const TOKEN_VALUE: Record<TokenType, number> = {
+  saco: 5,
+  espiga: 1,
+  rato: -1,
+};
 export const TOKEN_MIN = 0;
 export const TOKEN_MAX = 99;
 export type TokenCounts = Record<TokenType, number>;
@@ -177,8 +181,16 @@ export type Mode = 'standard' | 'solo';
 export type PlayerKind = 'human' | 'mac' | 'donald';
 export type RoundNumber = 1 | 2 | 3 | 4 | 5 | 6;
 
-export interface Player { id: string; name: string; kind: PlayerKind; tokens: TokenCounts; }
-export interface Draft { bid: number; tricks: number; }
+export interface Player {
+  id: string;
+  name: string;
+  kind: PlayerKind;
+  tokens: TokenCounts;
+}
+export interface Draft {
+  bid: number;
+  tricks: number;
+}
 
 export interface RoundResult {
   round: RoundNumber;
@@ -190,7 +202,7 @@ export interface RoundResult {
 export interface GameState {
   schemaVersion: 1;
   mode: Mode;
-  players: Player[];            // ordem de exibição; no modo padrão é também a ordem horária à mesa
+  players: Player[]; // ordem de exibição; no modo padrão é também a ordem horária à mesa
   firstDealerId: string | null; // null no solo
   currentRound: RoundNumber;
   tiebreakCount: number;
@@ -199,8 +211,15 @@ export interface GameState {
   finished: boolean;
 }
 
-export interface Settings { vibrate: boolean; wakeLock: boolean; }
-export interface RootState { game: GameState | null; seenCards: string[]; settings: Settings; }
+export interface Settings {
+  vibrate: boolean;
+  wakeLock: boolean;
+}
+export interface RootState {
+  game: GameState | null;
+  seenCards: string[];
+  settings: Settings;
+}
 ```
 
 Chave do localStorage: `farmhand-tracker:v1`. Padrões: `vibrate: true`, `wakeLock: true`, `seenCards: []`. Ids: Mac = `mac`, Donald = `donald`; humanos usam `crypto.randomUUID()`.
@@ -261,14 +280,14 @@ Todas as telas, exceto `/` e `/jogo/novo/`, exibem `BottomNav` fixo com 5 itens:
 - Com partida em andamento: faixa “Continuar partida” com “Rodada X de 6 · N jogadores” (no solo: “Rodada X de 6 · Solitário”), que leva a `/jogo/`.
 - Cartões de menu (1 coluna abaixo de 640 px; 2 colunas a partir de 640 px), cada um com ícone, título e uma linha de descrição:
 
-| Título | Descrição | Destino | `data-testid` |
-| --- | --- | --- | --- |
-| Contador de Tokens | Pontuação de cada jogador | `/jogo/` (sem partida: `/jogo/novo/`) | `menu-card-contador` |
-| Regras | Como jogar, em português | `/regras/` | `menu-card-regras` |
-| Painel da Rodada | Lances, vazas e pontos | `/rodada/` | `menu-card-rodada` |
-| Guia de Cartas | Quais cartas existem | `/cartas/` | `menu-card-cartas` |
-| Nova Partida | Escolher jogadores e modo | `/jogo/novo/` | `menu-card-nova` |
-| Ajustes | Vibração, tela ligada, dados | `/ajustes/` | `menu-card-ajustes` |
+| Título             | Descrição                    | Destino                               | `data-testid`        |
+| ------------------ | ---------------------------- | ------------------------------------- | -------------------- |
+| Contador de Tokens | Pontuação de cada jogador    | `/jogo/` (sem partida: `/jogo/novo/`) | `menu-card-contador` |
+| Regras             | Como jogar, em português     | `/regras/`                            | `menu-card-regras`   |
+| Painel da Rodada   | Lances, vazas e pontos       | `/rodada/`                            | `menu-card-rodada`   |
+| Guia de Cartas     | Quais cartas existem         | `/cartas/`                            | `menu-card-cartas`   |
+| Nova Partida       | Escolher jogadores e modo    | `/jogo/novo/`                         | `menu-card-nova`     |
+| Ajustes            | Vibração, tela ligada, dados | `/ajustes/`                           | `menu-card-ajustes`  |
 
 ### 7.2 Nova Partida (`/jogo/novo/`)
 
@@ -354,15 +373,15 @@ Todas as telas, exceto `/` e `/jogo/novo/`, exibem `BottomNav` fixo com 5 itens:
 
 ## 8. Design system e assets
 
-| Item | Valor |
-| --- | --- |
-| Cores base | `--bg #FFE4D2`, `--surface #FFF4EA`, `--teal #25756D`, `--teal-dark #1B5852`, `--orange #F26D3D`, `--ink #2B2B2B`, `--muted #7A6A60`, `--positive #2E7D32`, `--negative #C0392B` |
-| Cores dos jogadores (por índice) | `#5C5CAA`, `#3AA6A6`, `#8BB63F`, `#B5316E`, `#D98A1F`; Mac `#6B7280`; Donald `#8D6E63` |
-| Cores dos naipes | menta `#6FC7B0`, laranja `#F28A4B`, azul `#5B8BD0`, amarelo `#F2B632`, lima `#8CC63F`, rosa `#E5588F`; texto sobre elas `#1F1F1F` |
-| Tipografia | Chango para títulos (h1 28 px, h2 20 px); Josefin Sans no corpo (16 px); quantidade dos tokens 32 px, negrito, `tabular-nums` |
-| Forma | Cartões com raio 16 px; botões − e + circulares de 56 px (+ preenchido `--teal` com texto branco; − só com contorno `--teal`) |
-| Movimento | Transições de 150 ms; nada além disso; respeitar `prefers-reduced-motion` |
-| Layout | `viewport` com `viewport-fit=cover`; `BottomNav` usa `env(safe-area-inset-bottom)` |
+| Item                             | Valor                                                                                                                                                                            |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cores base                       | `--bg #FFE4D2`, `--surface #FFF4EA`, `--teal #25756D`, `--teal-dark #1B5852`, `--orange #F26D3D`, `--ink #2B2B2B`, `--muted #7A6A60`, `--positive #2E7D32`, `--negative #C0392B` |
+| Cores dos jogadores (por índice) | `#5C5CAA`, `#3AA6A6`, `#8BB63F`, `#B5316E`, `#D98A1F`; Mac `#6B7280`; Donald `#8D6E63`                                                                                           |
+| Cores dos naipes                 | menta `#6FC7B0`, laranja `#F28A4B`, azul `#5B8BD0`, amarelo `#F2B632`, lima `#8CC63F`, rosa `#E5588F`; texto sobre elas `#1F1F1F`                                                |
+| Tipografia                       | Chango para títulos (h1 28 px, h2 20 px); Josefin Sans no corpo (16 px); quantidade dos tokens 32 px, negrito, `tabular-nums`                                                    |
+| Forma                            | Cartões com raio 16 px; botões − e + circulares de 56 px (+ preenchido `--teal` com texto branco; − só com contorno `--teal`)                                                    |
+| Movimento                        | Transições de 150 ms; nada além disso; respeitar `prefers-reduced-motion`                                                                                                        |
+| Layout                           | `viewport` com `viewport-fit=cover`; `BottomNav` usa `env(safe-area-inset-bottom)`                                                                                               |
 
 **Imagens dos tokens (fornecidas pelo usuário):** três PNGs com fundo transparente, 512×512, recortados do quadro “48 scoring tokens” da página 3 do manual, salvos nos caminhos da seção 2.1. As artes pertencem à Grail Games: uso pessoal, sem publicar o repositório com elas.
 
@@ -389,59 +408,59 @@ Todas as telas, exceto `/` e `/jogo/novo/`, exibem `BottomNav` fixo com 5 itens:
 
 ### 10.1 Unitários (Vitest, cobertura ≥ 90% em `src/domain`)
 
-| Alvo | Entrada | Esperado |
-| --- | --- | --- |
-| `totalPoints` | saco 2, espiga 3, rato 4 | 9 |
-| `totalPoints` | saco 0, espiga 0, rato 3 | −3 |
-| `scoreRound` (exemplo oficial, rodada 4) | (3,3), (2,0), (0,1), (0,0) | +4, −2, −1, +4 |
-| `scoreRound` | rodada 6, (1,3) e (3,1) | −2 e −2 |
-| `pointsToTokens` | 6, 4, −3, 0, 11 | {1,1,0}, {0,4,0}, {0,0,3}, {0,0,0}, {2,1,0} (saco, espiga, rato) |
-| `cardsPerPlayer` | (R5,n3), (R6,n3), (R5,n4), (R6,n4), (R5,n5), (R6,n5) | 5, 6, 5, 5, 4, 4 |
-| `unusedCards` | (R1,n5), (R6,n3), (R6,n4), (R5,n5) | 16, 3, 1, 1 |
-| `dummyBid` | Mac R1 a R6; Donald R1 a R6 | 0,1,0,2,0,3; 1,0,1,0,2,0 |
-| `dealerId` e `leaderId`, 2 humanos + Mac | rodadas 1 a 6 | dealers J1,J2,Mac,J1,J2,Mac; líderes J2,Mac,J1,J2,Mac,J1 |
-| `dealerId` e `leaderId`, 4 humanos, primeiro dealer P1 | rodadas 1 a 6 | dealers P1,P2,P3,P4,P1,P2; líderes P2,P3,P4,P1,P2,P3 |
-| Solo | rodadas 1 a 6 | líderes Mac,Donald,Você,Mac,Donald,Você; `dealerId` = null |
-| `rankPlayers` | totais 10, 10, 7 | posições 1, 1, 3 |
-| `setTokens` | espiga 0 com −1; espiga 99 com +1 | ignorado; ignorado |
-| `applyRound` (3 humanos, R1) | J1 lance 1 e vazas 1; J2 e J3 lance 0 e vazas 0 | cada um com espiga 1; `currentRound` = 2 |
-| `applyRound` | soma das vazas maior que as cartas | estado inalterado |
-| `applyRound` na rodada 6 | qualquer válido | `finished` = true |
-| `undoLastRound` | logo após `applyRound` | tokens, rodada e `draft` restaurados |
-| `startTiebreak` | jogo finalizado com empate | `currentRound` = 6, `tiebreakCount` = 1, `finished` = false |
+| Alvo                                                   | Entrada                                              | Esperado                                                         |
+| ------------------------------------------------------ | ---------------------------------------------------- | ---------------------------------------------------------------- |
+| `totalPoints`                                          | saco 2, espiga 3, rato 4                             | 9                                                                |
+| `totalPoints`                                          | saco 0, espiga 0, rato 3                             | −3                                                               |
+| `scoreRound` (exemplo oficial, rodada 4)               | (3,3), (2,0), (0,1), (0,0)                           | +4, −2, −1, +4                                                   |
+| `scoreRound`                                           | rodada 6, (1,3) e (3,1)                              | −2 e −2                                                          |
+| `pointsToTokens`                                       | 6, 4, −3, 0, 11                                      | {1,1,0}, {0,4,0}, {0,0,3}, {0,0,0}, {2,1,0} (saco, espiga, rato) |
+| `cardsPerPlayer`                                       | (R5,n3), (R6,n3), (R5,n4), (R6,n4), (R5,n5), (R6,n5) | 5, 6, 5, 5, 4, 4                                                 |
+| `unusedCards`                                          | (R1,n5), (R6,n3), (R6,n4), (R5,n5)                   | 16, 3, 1, 1                                                      |
+| `dummyBid`                                             | Mac R1 a R6; Donald R1 a R6                          | 0,1,0,2,0,3; 1,0,1,0,2,0                                         |
+| `dealerId` e `leaderId`, 2 humanos + Mac               | rodadas 1 a 6                                        | dealers J1,J2,Mac,J1,J2,Mac; líderes J2,Mac,J1,J2,Mac,J1         |
+| `dealerId` e `leaderId`, 4 humanos, primeiro dealer P1 | rodadas 1 a 6                                        | dealers P1,P2,P3,P4,P1,P2; líderes P2,P3,P4,P1,P2,P3             |
+| Solo                                                   | rodadas 1 a 6                                        | líderes Mac,Donald,Você,Mac,Donald,Você; `dealerId` = null       |
+| `rankPlayers`                                          | totais 10, 10, 7                                     | posições 1, 1, 3                                                 |
+| `setTokens`                                            | espiga 0 com −1; espiga 99 com +1                    | ignorado; ignorado                                               |
+| `applyRound` (3 humanos, R1)                           | J1 lance 1 e vazas 1; J2 e J3 lance 0 e vazas 0      | cada um com espiga 1; `currentRound` = 2                         |
+| `applyRound`                                           | soma das vazas maior que as cartas                   | estado inalterado                                                |
+| `applyRound` na rodada 6                               | qualquer válido                                      | `finished` = true                                                |
+| `undoLastRound`                                        | logo após `applyRound`                               | tokens, rodada e `draft` restaurados                             |
+| `startTiebreak`                                        | jogo finalizado com empate                           | `currentRound` = 6, `tiebreakCount` = 1, `finished` = false      |
 
 ### 10.2 E2E (Playwright)
 
-| ID | Cenário | Resultado esperado |
-| --- | --- | --- |
-| E1 | Abrir `/` e clicar em Contador de Tokens sem partida | 6 cartões no menu; navega para `/jogo/novo/` |
-| E2 | Stepper de jogadores | Em 2, − desabilitado; em 5, + desabilitado; 2 jogadores geram 3 cartões (J1, J2, Mac); 5 geram 5 |
-| E3 | Nomes duplicados | Erro “Os nomes precisam ser diferentes.” e iniciar desabilitado |
-| E4 | Jogador 0: espiga + 3 vezes, saco + 1 vez, rato + 1 vez | Total 7; − em contador zerado desabilitado |
-| E5 | Recarregar `/jogo/` | Contadores mantidos |
-| E6 | Menu → Regras, buscar “anulam” | Seção `fase-vazas` visível; BottomNav volta ao menu |
-| E7 | Guia de Cartas: marcar azul 3 | “Restam” do 3 mostra 2; “Vistas: 1 de 21”; Limpar zera |
-| E8 | 3 humanos, R1: J1 lance 1 e vazas 1; J2 e J3 lance 0 e vazas 0; aplicar | Cada um com total 1; “Rodada 2 de 6” |
-| E9 | R1 com J1 vazas 1 e J2 vazas 1 | Aplicar desabilitado e mensagem de soma |
-| E10 | Aplicar R1 e desfazer | Totais voltam a 0; “Rodada 1 de 6” |
-| E11 | Modo solo | Cartões Você, Mac, Donald; Mac começa; lance do Donald travado em 1 na R1 |
-| E12 | 3 humanos; 6 rodadas com todos lance 0 e vazas 0 | Empate triplo com 21 pontos; botão de desempate visível |
-| E13 | Build de produção, carregar, `context.setOffline(true)`, recarregar `/jogo/` | A página abre normalmente |
+| ID  | Cenário                                                                      | Resultado esperado                                                                               |
+| --- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| E1  | Abrir `/` e clicar em Contador de Tokens sem partida                         | 6 cartões no menu; navega para `/jogo/novo/`                                                     |
+| E2  | Stepper de jogadores                                                         | Em 2, − desabilitado; em 5, + desabilitado; 2 jogadores geram 3 cartões (J1, J2, Mac); 5 geram 5 |
+| E3  | Nomes duplicados                                                             | Erro “Os nomes precisam ser diferentes.” e iniciar desabilitado                                  |
+| E4  | Jogador 0: espiga + 3 vezes, saco + 1 vez, rato + 1 vez                      | Total 7; − em contador zerado desabilitado                                                       |
+| E5  | Recarregar `/jogo/`                                                          | Contadores mantidos                                                                              |
+| E6  | Menu → Regras, buscar “anulam”                                               | Seção `fase-vazas` visível; BottomNav volta ao menu                                              |
+| E7  | Guia de Cartas: marcar azul 3                                                | “Restam” do 3 mostra 2; “Vistas: 1 de 21”; Limpar zera                                           |
+| E8  | 3 humanos, R1: J1 lance 1 e vazas 1; J2 e J3 lance 0 e vazas 0; aplicar      | Cada um com total 1; “Rodada 2 de 6”                                                             |
+| E9  | R1 com J1 vazas 1 e J2 vazas 1                                               | Aplicar desabilitado e mensagem de soma                                                          |
+| E10 | Aplicar R1 e desfazer                                                        | Totais voltam a 0; “Rodada 1 de 6”                                                               |
+| E11 | Modo solo                                                                    | Cartões Você, Mac, Donald; Mac começa; lance do Donald travado em 1 na R1                        |
+| E12 | 3 humanos; 6 rodadas com todos lance 0 e vazas 0                             | Empate triplo com 21 pontos; botão de desempate visível                                          |
+| E13 | Build de produção, carregar, `context.setOffline(true)`, recarregar `/jogo/` | A página abre normalmente                                                                        |
 
 Rodar E1 a E12 em 390×844 e 1280×800; E13 só em 390×844 contra `npm run build` servido da pasta `out`.
 
 ## 11. Plano de implementação (ordem obrigatória)
 
-| Fase | Entrega | Critério de aceite |
-| --- | --- | --- |
-| F0 | Projeto Next.js com TypeScript estrito, Tailwind, ESLint, Prettier, Vitest, Playwright e scripts | `lint`, `typecheck`, `test` e `build` passam no projeto vazio |
-| F1 | `src/domain` completo | Todos os casos da seção 10.1 passam; cobertura ≥ 90% |
-| F2 | Store, persistência e hidratação | Testes de store passam; recarregar mantém o estado |
-| F3 | AppShell, Menu, Nova Partida e Contador (MVP) | E1 a E5 passam |
-| F4 | Regras e Guia de Cartas | E6 e E7 passam |
-| F5 | Painel da Rodada e Fim de jogo (incluindo solo e desempate) | E8 a E12 passam |
-| F6 | Ajustes, PWA, wake lock, vibração e ícones | E13 passa; Lighthouse conforme seção 9 |
-| F7 | Acabamento, `README.md`, `DECISIONS.md`, revisão de acessibilidade | Definição de pronto cumprida |
+| Fase | Entrega                                                                                          | Critério de aceite                                            |
+| ---- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
+| F0   | Projeto Next.js com TypeScript estrito, Tailwind, ESLint, Prettier, Vitest, Playwright e scripts | `lint`, `typecheck`, `test` e `build` passam no projeto vazio |
+| F1   | `src/domain` completo                                                                            | Todos os casos da seção 10.1 passam; cobertura ≥ 90%          |
+| F2   | Store, persistência e hidratação                                                                 | Testes de store passam; recarregar mantém o estado            |
+| F3   | AppShell, Menu, Nova Partida e Contador (MVP)                                                    | E1 a E5 passam                                                |
+| F4   | Regras e Guia de Cartas                                                                          | E6 e E7 passam                                                |
+| F5   | Painel da Rodada e Fim de jogo (incluindo solo e desempate)                                      | E8 a E12 passam                                               |
+| F6   | Ajustes, PWA, wake lock, vibração e ícones                                                       | E13 passa; Lighthouse conforme seção 9                        |
+| F7   | Acabamento, `README.md`, `DECISIONS.md`, revisão de acessibilidade                               | Definição de pronto cumprida                                  |
 
 ## 12. Fora de escopo (não implementar)
 

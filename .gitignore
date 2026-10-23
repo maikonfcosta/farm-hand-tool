@@ -1,6 +1,4 @@
 node_modules/
-node_modules-backup/
-package-lock.backup.json
 .next/
 out/
 coverage/
@@ -14,3 +12,4 @@ public/assets/tokens/*.png
 docs/qa/*.html
 docs/qa/*.json
 docs/qa/*.png
+

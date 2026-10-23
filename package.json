@@ -2,6 +2,7 @@
   "name": "farm-hand-tracker",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "npm run icons && next build && node scripts/generate-precache.mjs",

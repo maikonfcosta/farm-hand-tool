@@ -1,7 +1,96 @@
 'use client';
-import {AppShell} from '@/components/AppShell';
-import {panel,secondary} from '@/components/ui';
-import {text} from '@/content/ptbr';
-import {SUITS} from '@/domain/cards';
-import {useGameStore} from '@/store/gameStore';
-export default function Cards(){const seen=useGameStore(s=>s.seenCards);const toggle=useGameStore(s=>s.toggleSeenCard);const clear=useGameStore(s=>s.clearSeenCards);return <AppShell title={text.menuCards[3].title}><p className="mb-6 leading-relaxed text-[var(--muted)]">{text.cardNote}</p><div className={`${panel} overflow-x-auto !p-3 sm:!p-5`}><table className="w-full border-separate border-spacing-1 text-center"><thead><tr><th><span className="sr-only">{text.cards}</span></th>{[1,2,3,4,5,6,7].map(n=><th key={n} className="pb-2">{n}</th>)}</tr></thead><tbody>{SUITS.map(s=><tr key={s.id}><th scope="row" className="pr-1 text-left text-xs sm:pr-3 sm:text-base">{text.suitNames[s.id as keyof typeof text.suitNames]}</th>{[1,2,3,4,5,6,7].map(n=>{const key=`${s.id}-${n}`;return <td key={n}>{s.numbers.includes(n)?<button aria-label={text.cardLabel(text.suitNames[s.id as keyof typeof text.suitNames],n)} aria-pressed={seen.includes(key)} data-testid={`card-${key}`} onClick={()=>toggle(key)} style={{backgroundColor:s.color,color:'#1F1F1F'}} className={`min-h-12 w-full min-w-7 rounded-lg text-xl font-bold sm:min-w-12 ${seen.includes(key)?'opacity-35 line-through':''}`}>{n}</button>:<span className="flex min-h-12 items-center justify-center rounded-lg bg-[#d9bda840] text-[var(--muted)]">·</span>}</td>;})}</tr>)}</tbody><tfoot><tr><th scope="row" className="pt-4 text-left text-xs sm:text-base">{text.remaining}</th>{[1,2,3,4,5,6,7].map(n=><td key={n} className="pt-4 font-bold tabular-nums" data-testid={`remaining-${n}`}>{3-seen.filter(k=>k.endsWith(`-${n}`)).length}</td>)}</tr></tfoot></table></div><div className="mt-5 flex flex-wrap items-center justify-between gap-4"><p aria-live="polite" className="font-bold">{text.seen(seen.length)}</p><button className={secondary} disabled={!seen.length} onClick={clear}>{text.clearSeen}</button></div></AppShell>;}
+import { AppShell } from '@/components/AppShell';
+import { panel, secondary } from '@/components/ui';
+import { text } from '@/content/ptbr';
+import { SUITS } from '@/domain/cards';
+import { useGameStore } from '@/store/gameStore';
+export default function Cards() {
+  const seen = useGameStore((s) => s.seenCards);
+  const toggle = useGameStore((s) => s.toggleSeenCard);
+  const clear = useGameStore((s) => s.clearSeenCards);
+  return (
+    <AppShell title={text.menuCards[3].title}>
+      <p className="mb-6 leading-relaxed text-[var(--muted)]">
+        {text.cardNote}
+      </p>
+      <div className={`${panel} overflow-x-auto !p-3 sm:!p-5`}>
+        <table className="w-full border-separate border-spacing-1 text-center">
+          <thead>
+            <tr>
+              <th>
+                <span className="sr-only">{text.cards}</span>
+              </th>
+              {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+                <th key={n} className="pb-2">
+                  {n}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {SUITS.map((s) => (
+              <tr key={s.id}>
+                <th
+                  scope="row"
+                  className="pr-1 text-left text-xs sm:pr-3 sm:text-base"
+                >
+                  {text.suitNames[s.id as keyof typeof text.suitNames]}
+                </th>
+                {[1, 2, 3, 4, 5, 6, 7].map((n) => {
+                  const key = `${s.id}-${n}`;
+                  return (
+                    <td key={n}>
+                      {s.numbers.includes(n) ? (
+                        <button
+                          aria-label={text.cardLabel(
+                            text.suitNames[s.id as keyof typeof text.suitNames],
+                            n,
+                          )}
+                          aria-pressed={seen.includes(key)}
+                          data-testid={`card-${key}`}
+                          onClick={() => toggle(key)}
+                          style={{ backgroundColor: s.color, color: '#1F1F1F' }}
+                          className={`min-h-12 w-full min-w-7 rounded-lg text-xl font-bold sm:min-w-12 ${seen.includes(key) ? 'opacity-35 line-through' : ''}`}
+                        >
+                          {n}
+                        </button>
+                      ) : (
+                        <span className="flex min-h-12 items-center justify-center rounded-lg bg-[#d9bda840] text-[var(--muted)]">
+                          ·
+                        </span>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row" className="pt-4 text-left text-xs sm:text-base">
+                {text.remaining}
+              </th>
+              {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+                <td
+                  key={n}
+                  className="pt-4 font-bold tabular-nums"
+                  data-testid={`remaining-${n}`}
+                >
+                  {3 - seen.filter((k) => k.endsWith(`-${n}`)).length}
+                </td>
+              ))}
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
+        <p aria-live="polite" className="font-bold">
+          {text.seen(seen.length)}
+        </p>
+        <button className={secondary} disabled={!seen.length} onClick={clear}>
+          {text.clearSeen}
+        </button>
+      </div>
+    </AppShell>
+  );
+}

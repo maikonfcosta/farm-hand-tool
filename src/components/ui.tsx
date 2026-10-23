@@ -1,10 +1,129 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
-import {Minus,Plus} from 'lucide-react';
-import {text} from '@/content/ptbr';
-export const panel='rounded-2xl border border-[#d9bda8] bg-[var(--surface)] p-5 shadow-[0_3px_0_#d9bda850]';
-export const primary='inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--teal)] px-5 py-3 font-bold text-white hover:bg-[var(--teal-dark)] disabled:opacity-40';
-export const secondary='inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[var(--teal)] px-4 py-3 font-bold text-[var(--teal-dark)] hover:bg-[#25756d12]';
-export function StepperField({label,value,min=0,max,onChange,locked=false,testId}:{label:string;value:number;min?:number;max:number;onChange:(n:number)=>void;locked?:boolean;testId?:string}){return <div className="flex flex-col gap-2"><span className="font-bold">{label}{locked?` · ${text.fixed}`:''}</span><div className="flex items-center gap-2"><button type="button" className="flex size-12 shrink-0 items-center justify-center rounded-full border border-[var(--teal)] text-[var(--teal-dark)]" aria-label={text.decrease(label)} disabled={locked||value===min} onClick={()=>onChange(value-1)} data-testid={testId?`${testId}-minus`:undefined}><Minus size={20}/></button><output className="min-w-6 text-center text-2xl font-bold tabular-nums" aria-live="polite">{value}</output><button type="button" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--teal)] text-white" aria-label={text.increase(label)} disabled={locked||value===max} onClick={()=>onChange(value+1)} data-testid={testId?`${testId}-plus`:undefined}><Plus size={20}/></button></div></div>;}
-export interface DialogAction {title:string;body?:React.ReactNode;confirm?:string;onConfirm:(value:string)=>void;input?:string;validate?:(value:string)=>boolean;}
-export function ConfirmDialog({action,onClose}:{action:DialogAction;onClose:()=>void}){const ref=useRef<HTMLDialogElement>(null);const [value,setValue]=useState(action.input??'');useEffect(()=>{const previous=document.activeElement as HTMLElement|null;ref.current?.showModal();return ()=>previous?.focus();},[]);return <dialog ref={ref} aria-labelledby="dialog-title" onCancel={onClose} onClick={e=>{if(e.target===e.currentTarget)onClose();}}><h2 id="dialog-title" className="mb-4">{action.title}</h2>{action.body&&<div className="mb-5 leading-relaxed">{action.body}</div>}{action.input!==undefined&&<label className="mb-4 block">{text.name}<input autoFocus maxLength={16} value={value} onChange={e=>setValue(e.target.value)}/></label>}<div className="mt-5 flex flex-wrap justify-end gap-3"><button type="button" className={secondary} onClick={onClose}>{text.cancel}</button><button type="button" className={primary} disabled={action.validate?!action.validate(value):false} onClick={()=>{action.onConfirm(value);onClose();}}>{action.confirm??text.confirm}</button></div></dialog>;}
+import { useEffect, useRef, useState } from 'react';
+import { Minus, Plus } from 'lucide-react';
+import { text } from '@/content/ptbr';
+export const panel =
+  'rounded-2xl border border-[#d9bda8] bg-[var(--surface)] p-5 shadow-[0_3px_0_#d9bda850]';
+export const primary =
+  'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--teal)] px-5 py-3 font-bold text-white hover:bg-[var(--teal-dark)] disabled:opacity-40';
+export const secondary =
+  'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[var(--teal)] px-4 py-3 font-bold text-[var(--teal-dark)] hover:bg-[#25756d12]';
+export function StepperField({
+  label,
+  value,
+  min = 0,
+  max,
+  onChange,
+  locked = false,
+  testId,
+}: {
+  label: string;
+  value: number;
+  min?: number;
+  max: number;
+  onChange: (n: number) => void;
+  locked?: boolean;
+  testId?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="font-bold">
+        {label}
+        {locked ? ` · ${text.fixed}` : ''}
+      </span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className="flex size-12 shrink-0 items-center justify-center rounded-full border border-[var(--teal)] text-[var(--teal-dark)]"
+          aria-label={text.decrease(label)}
+          disabled={locked || value === min}
+          onClick={() => onChange(value - 1)}
+          data-testid={testId ? `${testId}-minus` : undefined}
+        >
+          <Minus size={20} />
+        </button>
+        <output
+          className="min-w-6 text-center text-2xl font-bold tabular-nums"
+          aria-live="polite"
+        >
+          {value}
+        </output>
+        <button
+          type="button"
+          className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[var(--teal)] text-white"
+          aria-label={text.increase(label)}
+          disabled={locked || value === max}
+          onClick={() => onChange(value + 1)}
+          data-testid={testId ? `${testId}-plus` : undefined}
+        >
+          <Plus size={20} />
+        </button>
+      </div>
+    </div>
+  );
+}
+export interface DialogAction {
+  title: string;
+  body?: React.ReactNode;
+  confirm?: string;
+  onConfirm: (value: string) => void;
+  input?: string;
+  validate?: (value: string) => boolean;
+}
+export function ConfirmDialog({
+  action,
+  onClose,
+}: {
+  action: DialogAction;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const [value, setValue] = useState(action.input ?? '');
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    ref.current?.showModal();
+    return () => previous?.focus();
+  }, []);
+  return (
+    <dialog
+      ref={ref}
+      aria-labelledby="dialog-title"
+      onCancel={onClose}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <h2 id="dialog-title" className="mb-4">
+        {action.title}
+      </h2>
+      {action.body && <div className="mb-5 leading-relaxed">{action.body}</div>}
+      {action.input !== undefined && (
+        <label className="mb-4 block">
+          {text.name}
+          <input
+            autoFocus
+            maxLength={16}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </label>
+      )}
+      <div className="mt-5 flex flex-wrap justify-end gap-3">
+        <button type="button" className={secondary} onClick={onClose}>
+          {text.cancel}
+        </button>
+        <button
+          type="button"
+          className={primary}
+          disabled={action.validate ? !action.validate(value) : false}
+          onClick={() => {
+            action.onConfirm(value);
+            onClose();
+          }}
+        >
+          {action.confirm ?? text.confirm}
+        </button>
+      </div>
+    </dialog>
+  );
+}

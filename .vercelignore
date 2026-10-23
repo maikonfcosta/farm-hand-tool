@@ -1,8 +1,14 @@
 node_modules
+node_modules-backup
+package-lock.backup.json
 .next
+out
 .git
 docs/reference
 public/assets/tokens/*.png
 test-results
 playwright-report
 coverage
+docs/qa/*.png
+docs/qa/*.html
+docs/qa/*.json

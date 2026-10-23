@@ -1,12 +1,129 @@
 'use client';
 import Link from 'next/link';
-import {usePathname,useRouter} from 'next/navigation';
-import {useEffect} from 'react';
-import {ArrowLeft,BookOpen,Coins,House,Layers3,ListChecks,Sprout} from 'lucide-react';
-import {StoreProvider} from '@/store/StoreProvider';
-import {useGameStore} from '@/store/gameStore';
-import {useWakeLock} from '@/hooks/useWakeLock';
-import {text} from '@/content/ptbr';
-const nav=[{href:'/',label:text.menu,icon:House},{href:'/jogo/',label:text.tokens,icon:Coins},{href:'/rodada/',label:text.round,icon:ListChecks},{href:'/cartas/',label:text.cards,icon:Layers3},{href:'/regras/',label:text.rules,icon:BookOpen}];
-function Content({title,children,actions}:{title?:string;children:React.ReactNode;actions?:React.ReactNode}){const rawPathname=usePathname();const pathname=rawPathname==='/'?'/':rawPathname.replace(/\/$/,'')+'/';const router=useRouter();const hydrated=useGameStore(s=>s.hydrated);const game=useGameStore(s=>s.game);const storageError=useGameStore(s=>s.storageError);const home=pathname==='/';const setup=pathname==='/jogo/novo/';const protectedRoute=['/jogo/','/rodada/','/fim/'].includes(pathname);useWakeLock(['/jogo/','/rodada/','/cartas/'].includes(pathname));useEffect(()=>{if(hydrated&&protectedRoute&&!game)router.replace('/jogo/novo/');},[hydrated,protectedRoute,game,router]);return <><a href="#main" className="fixed left-4 top-2 z-50 -translate-y-24 rounded-lg bg-white p-3 focus:translate-y-0">{text.skip}</a><div className="mx-auto max-w-6xl px-4 pb-28 sm:px-8"><header className="flex min-h-24 items-center justify-between gap-4 border-b border-[#cfae9580] py-5">{home?<div className="flex items-center gap-3"><div className="flex size-12 items-center justify-center rounded-2xl bg-[var(--teal)] text-white"><Sprout size={30}/></div><span className="font-bold tracking-wide text-[var(--teal-dark)]">{text.title}</span></div>:<Link href="/" aria-label={text.back} className="flex min-h-12 items-center gap-2 font-bold text-[var(--teal-dark)]"><ArrowLeft size={20}/>{text.menu}</Link>}<div className="flex items-center gap-2">{actions}</div></header><main id="main" className="pt-7">{title&&<h1 className="mb-6 text-[var(--teal-dark)]">{title}</h1>}{storageError&&<p role="alert" className="mb-4">{text.storageError}</p>}{(!hydrated&&!home)||(protectedRoute&&!game)?<div aria-label={text.loading} className="h-48 rounded-2xl bg-[#fff4ea] motion-safe:animate-pulse"/>:children}</main></div>{!home&&!setup&&<nav aria-label={text.menu} className="fixed inset-x-0 bottom-0 z-20 border-t border-[#d9bda8] bg-[var(--surface)] pb-[env(safe-area-inset-bottom)]"><div className="mx-auto grid max-w-xl grid-cols-5">{nav.map(({href,label,icon:Icon})=><Link key={href} href={href} aria-current={pathname===href?'page':undefined} className={`flex min-h-18 flex-col items-center justify-center gap-1 text-sm ${pathname===href?'bg-[#25756d12] font-bold text-[var(--teal-dark)]':'text-[var(--muted)]'}`}><Icon size={23}/>{label}</Link>)}</div></nav>}</>;}
-export function AppShell(props:{title?:string;children:React.ReactNode;actions?:React.ReactNode}){return <StoreProvider><Content {...props}/></StoreProvider>;}
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import {
+  ArrowLeft,
+  BookOpen,
+  Coins,
+  House,
+  Layers3,
+  ListChecks,
+  Sprout,
+} from 'lucide-react';
+import { StoreProvider } from '@/store/StoreProvider';
+import { useGameStore } from '@/store/gameStore';
+import { useWakeLock } from '@/hooks/useWakeLock';
+import { text } from '@/content/ptbr';
+const nav = [
+  { href: '/', label: text.menu, icon: House },
+  { href: '/jogo/', label: text.tokens, icon: Coins },
+  { href: '/rodada/', label: text.round, icon: ListChecks },
+  { href: '/cartas/', label: text.cards, icon: Layers3 },
+  { href: '/regras/', label: text.rules, icon: BookOpen },
+];
+function Content({
+  title,
+  children,
+  actions,
+}: {
+  title?: string;
+  children: React.ReactNode;
+  actions?: React.ReactNode;
+}) {
+  const rawPathname = usePathname();
+  const pathname =
+    rawPathname === '/' ? '/' : rawPathname.replace(/\/$/, '') + '/';
+  const router = useRouter();
+  const hydrated = useGameStore((s) => s.hydrated);
+  const game = useGameStore((s) => s.game);
+  const storageError = useGameStore((s) => s.storageError);
+  const home = pathname === '/';
+  const setup = pathname === '/jogo/novo/';
+  const protectedRoute = ['/jogo/', '/rodada/', '/fim/'].includes(pathname);
+  useWakeLock(['/jogo/', '/rodada/', '/cartas/'].includes(pathname));
+  useEffect(() => {
+    if (hydrated && protectedRoute && !game) router.replace('/jogo/novo/');
+  }, [hydrated, protectedRoute, game, router]);
+  return (
+    <>
+      <a
+        href="#main"
+        className="fixed left-4 top-2 z-50 -translate-y-24 rounded-lg bg-white p-3 focus:translate-y-0"
+      >
+        {text.skip}
+      </a>
+      <div className="mx-auto max-w-6xl px-4 pb-28 sm:px-8">
+        <header className="flex min-h-24 items-center justify-between gap-4 border-b border-[#cfae9580] py-5">
+          {home ? (
+            <div className="flex items-center gap-3">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-[var(--teal)] text-white">
+                <Sprout size={30} />
+              </div>
+              <span className="font-bold tracking-wide text-[var(--teal-dark)]">
+                {text.title}
+              </span>
+            </div>
+          ) : (
+            <Link
+              href="/"
+              aria-label={text.back}
+              className="flex min-h-12 items-center gap-2 font-bold text-[var(--teal-dark)]"
+            >
+              <ArrowLeft size={20} />
+              {text.menu}
+            </Link>
+          )}
+          <div className="flex items-center gap-2">{actions}</div>
+        </header>
+        <main id="main" className="pt-7">
+          {title && <h1 className="mb-6 text-[var(--teal-dark)]">{title}</h1>}
+          {storageError && (
+            <p role="alert" className="mb-4">
+              {text.storageError}
+            </p>
+          )}
+          {(!hydrated && !home) || (protectedRoute && !game) ? (
+            <div
+              aria-label={text.loading}
+              className="h-48 rounded-2xl bg-[#fff4ea] motion-safe:animate-pulse"
+            />
+          ) : (
+            children
+          )}
+        </main>
+      </div>
+      {!home && !setup && (
+        <nav
+          aria-label={text.menu}
+          className="fixed inset-x-0 bottom-0 z-20 border-t border-[#d9bda8] bg-[var(--surface)] pb-[env(safe-area-inset-bottom)]"
+        >
+          <div className="mx-auto grid max-w-xl grid-cols-5">
+            {nav.map(({ href, label, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                aria-current={pathname === href ? 'page' : undefined}
+                className={`flex min-h-18 flex-col items-center justify-center gap-1 text-sm ${pathname === href ? 'bg-[#25756d12] font-bold text-[var(--teal-dark)]' : 'text-[var(--muted)]'}`}
+              >
+                <Icon size={23} />
+                {label}
+              </Link>
+            ))}
+          </div>
+        </nav>
+      )}
+    </>
+  );
+}
+export function AppShell(props: {
+  title?: string;
+  children: React.ReactNode;
+  actions?: React.ReactNode;
+}) {
+  return (
+    <StoreProvider>
+      <Content {...props} />
+    </StoreProvider>
+  );
+}
