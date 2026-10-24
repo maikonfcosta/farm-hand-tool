@@ -35,6 +35,21 @@ test('E13 offline reload and unvisited routes', async ({
     .click();
   await page.getByTestId('card-azul-3').click();
   await expect(page.getByText('Vistas: 1 de 21')).toBeVisible();
+  await page.goto('/guia/');
+  await expect(
+    page.getByRole('heading', { name: 'Guia visual do Farm Hand' }),
+  ).toBeVisible();
+  await page
+    .getByRole('button', { name: 'Ampliar: Carta de apoio e pontuação' })
+    .click();
+  await expect(page.getByRole('dialog')).toContainText(
+    'Número da rodada × 1 ponto',
+  );
+  await page.getByRole('button', { name: 'Fechar ilustração' }).click();
+  await page.reload();
+  await expect(
+    page.getByRole('heading', { name: 'Seis símbolos, seis naipes' }),
+  ).toBeVisible();
   await page.goto('/ajustes/');
   await expect(
     page.getByRole('button', { name: 'Apagar todos os dados' }),

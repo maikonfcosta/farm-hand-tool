@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="docs/images/farm-hand-logo.png" alt="Logo do jogo Farm Hand" width="300" />
+</p>
+
 # Farm Hand Tracker
 
-Aplicativo em português para acompanhar partidas físicas de **Farm Hand**. Contador de tokens, painel de rodadas, consulta de regras e guia das 21 cartas. Mobile-first, instalável e com dados salvos no navegador.
+Aplicativo em português para acompanhar partidas físicas de **Farm Hand**. Contador de tokens, painel de rodadas, consulta de regras, controle das 21 cartas e guia ilustrado dos símbolos. Mobile-first, instalável e com dados salvos no navegador.
 
 - **Abrir o app:** https://farm-hand-tool.vercel.app
 - Repositório: https://github.com/maikonfcosta/farm-hand-tool
@@ -8,6 +12,44 @@ Aplicativo em português para acompanhar partidas físicas de **Farm Hand**. Con
 - Especificação: [docs/specs/webapp.md](docs/specs/webapp.md)
 - Decisões: [DECISIONS.md](DECISIONS.md)
 - Validação por fase: [docs/qa/progresso.md](docs/qa/progresso.md)
+- Validação do guia visual: [docs/qa/guia-visual.md](docs/qa/guia-visual.md)
+
+## Conheça o aplicativo
+
+O menu reúne os atalhos para preparar a partida, contar pontos, acompanhar
+rodadas e consultar regras.
+
+![Menu do Farm Hand Tracker no desktop](docs/images/menu-desktop.png)
+
+### Tokens e cartas no celular
+
+Conte sacos, espigas e ratos por jogador, acompanhe a soma e marque as cartas
+que já apareceram. As capturas usam uma partida demonstrativa e os ícones
+numéricos disponíveis no clone público.
+
+<p>
+  <img src="docs/images/tokens-mobile.png" alt="Contador no celular: um saco, uma espiga e um rato somam cinco pontos" width="300" />
+  <img src="docs/images/cartas-mobile.png" alt="Guia de cartas no celular com a carta azul de valor três marcada como vista" width="300" />
+</p>
+
+### Guia visual de símbolos
+
+Descubra o que a frente e o verso revelam, reconheça os seis naipes e consulte
+seus números possíveis. As ilustrações podem ser ampliadas. Abra pelo atalho
+**Guia visual: símbolos e cartas de apoio**, nas telas Cartas e Regras.
+
+![Guia visual explicando a frente e o verso de uma carta](docs/images/guia-desktop.png)
+
+### Carta de apoio explicada
+
+Pictogramas acompanhados de texto mostram como comparar lance e vazas e calcular
+a pontuação. O guia também explica os tokens +5, +1 e −1, com soma ilustrada,
+e a posição dos marcadores nas cartas de lance e rodada.
+
+![Carta de apoio ilustrada com as regras de acerto e erro do lance](docs/images/carta-de-apoio.png)
+
+Capturas da versão local em 24/10/2026. As novidades locais podem ainda não estar
+disponíveis no endereço de produção.
 
 ## Rodar localmente
 
@@ -25,7 +67,7 @@ npm run build
 npm start
 ```
 
-Abra http://127.0.0.1:4173. `npm start` serve somente o export em `out/`. As fontes são baixadas durante o build e servidas localmente depois.
+Abra http://127.0.0.1:4173. O guia fica em http://127.0.0.1:4173/guia/. `npm start` serve somente o export em `out/`. As fontes são baixadas durante o build e servidas localmente depois.
 
 ## Como usar
 
@@ -49,10 +91,17 @@ Os contadores manuais e os pontos aplicados por rodada somam entre si. Não apli
 | `/rodada/`    | Dealer, início, cartas, lances, vazas e histórico  |
 | `/cartas/`    | Grade dos seis naipes e marcações de cartas vistas |
 | `/regras/`    | Resumo e regras com busca sem diferenciar acentos  |
+| `/guia/`      | Guia ilustrado de naipes, cartas de apoio e tokens |
 | `/ajustes/`   | Vibração, tela ligada, limpeza de dados e créditos |
 | `/fim/`       | Resultado, metas do solo e desempate               |
 
 Contador, rodada e resultado exigem uma partida. Sem partida, redirecionam para a configuração.
+
+O guia visual fica disponível sem partida, com atalhos em Cartas, Regras e no
+contador. Inclui diagramas ampliáveis da frente/verso e da carta de apoio,
+legenda dos seis naipes, valores dos tokens, exemplo de soma e posição dos
+marcadores de lance e rodada. As ilustrações são esquemáticas e próprias; não
+publicam o PDF nem as artes originais. O guia também entra no cache offline.
 
 ## Dados e privacidade
 
@@ -115,6 +164,7 @@ tests/e2e/       Fluxos de usuário no navegador
 docs/specs/      Especificação fornecida
 docs/reference/  Manual local, ignorado pelo Git
 docs/qa/         Plano, evidências e resultados
+docs/images/     Logo e capturas usadas neste README
 ```
 
 Next.js 15, React 19, TypeScript estrito, Tailwind CSS 4, Zustand 5 e Lucide. Export estático com `trailingSlash` e imagens sem otimização de servidor. Hidratação explícita evita divergência entre HTML estático e dados locais.
@@ -131,6 +181,12 @@ public/assets/tokens/rato-menos-1.png
 ```
 
 `TokenImage` tenta o PNG e, se ausente, mostra o SVG circular com 5, 1 ou −1. O clone público e o deploy funcionam com esse fallback. `.gitignore` e `.vercelignore` impedem a publicação dos originais. Não retire essas exclusões sem rever a autorização de uso das artes.
+
+A logo no início deste README foi extraída da capa do manual fornecido, a pedido
+do mantenedor, para identificar o jogo. Farm Hand e sua logo pertencem à Grail
+Games. Essa inclusão não altera as exclusões do PDF e das artes dos tokens.
+As capturas em `docs/images/` mostram o aplicativo com dados demonstrativos;
+os diagramas do guia são próprios e os ícones são da biblioteca Lucide.
 
 ## Deploy na Vercel
 
