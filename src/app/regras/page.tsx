@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Search } from 'lucide-react';
+import { GuideLink } from '@/components/GuideLink';
 import { AppShell } from '@/components/AppShell';
 import { panel } from '@/components/ui';
 import { text } from '@/content/ptbr';
@@ -17,6 +18,7 @@ export default function Rules() {
   );
   return (
     <AppShell title={text.rules}>
+      <GuideLink />
       <label className="relative mb-6 block">
         <span className="sr-only">{text.search}</span>
         <Search

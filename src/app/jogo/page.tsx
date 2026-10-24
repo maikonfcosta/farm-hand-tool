@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MoreHorizontal } from 'lucide-react';
+import { GuideLink } from '@/components/GuideLink';
 import { AppShell } from '@/components/AppShell';
 import { RoundBar } from '@/components/RoundBar';
 import { PlayerCard } from '@/components/PlayerCard';
@@ -69,6 +70,7 @@ export default function Tokens() {
     >
       {game && (
         <>
+          <GuideLink tokens />
           <RoundBar game={game} />
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {game.players.map((p, i) => (

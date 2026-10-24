@@ -1,5 +1,15 @@
 export const rules = [
   {
+    id: 'simbolos-apoio',
+    title: 'Símbolos da carta de apoio',
+    text: 'A pilha de cartas representa as vazas ganhas; a grade numerada representa o lance. O sinal = indica acerto e ≠ indica erro. O # com setas representa o número da rodada. No acerto, ganhe esse número de pontos (espigas). No erro, multiplique a diferença absoluta entre lance e vazas por −1 (ratos). O sinal × significa multiplicar. A outra face do apoio mostra os números existentes em cada naipe. Consulte o Guia visual para ver as ilustrações.',
+  },
+  {
+    id: 'tokens',
+    title: 'Tokens e marcadores',
+    text: 'Saco = +5 pontos, espiga = +1 e rato = −1. Dois sacos, três espigas e um rato somam 12 pontos. Tokens de madeira marcam o lance e a rodada, sem valer pontos. No app, adicionar um rato diminui o total. Não conte manualmente uma rodada já aplicada automaticamente. Consulte as imagens no Guia visual.',
+  },
+  {
     id: 'visao-geral',
     title: 'Visão geral',
     text: 'Farm Hand é um jogo de vazas de previsão e dedução para 2 a 5 jogadores, cerca de 20 minutos, a partir de 10 anos. São 6 rodadas, cada uma com 3 fases: Lances, Vazas e Pontuação. As cartas vão de 1 a 7, não há trunfo e existem 3 cartas de cada número distribuídas pelos 6 naipes (21 cartas). Você vê o naipe das cartas dos oponentes (pelas costas), mas não os valores.',

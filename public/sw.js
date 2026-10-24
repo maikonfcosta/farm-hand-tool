@@ -7,6 +7,7 @@ const ROUTES = [
   '/rodada/',
   '/cartas/',
   '/regras/',
+  '/guia/',
   '/ajustes/',
   '/fim/',
 ];

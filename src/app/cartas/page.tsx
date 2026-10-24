@@ -1,4 +1,5 @@
 'use client';
+import { GuideLink } from '@/components/GuideLink';
 import { AppShell } from '@/components/AppShell';
 import { panel, secondary } from '@/components/ui';
 import { text } from '@/content/ptbr';
@@ -10,6 +11,7 @@ export default function Cards() {
   const clear = useGameStore((s) => s.clearSeenCards);
   return (
     <AppShell title={text.menuCards[3].title}>
+      <GuideLink />
       <p className="mb-6 leading-relaxed text-[var(--muted)]">
         {text.cardNote}
       </p>
