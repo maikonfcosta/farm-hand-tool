@@ -21,6 +21,17 @@ rodadas e consultar regras.
 
 ![Menu do Farm Hand Tracker no desktop](docs/images/menu-desktop.png)
 
+### Simulador Solo Interativo
+
+Jogue partidas completas do modo solitário oficial diretamente no navegador contra os oponentes virtuais **Mac** (à sua esquerda) e **Donald** (à sua direita).
+
+- **Regras oficiais completas**: lances fixos dos bots, rodízio de liderança de vaza (R1/R4: Mac, R2/R5: Donald, R3/R6: Você) e obrigação de seguir o naipe.
+- **Inteligência dos bots**: jogam a carta do topo ou a do topo do naipe pedido.
+- **Anulação de empates**: cartas com valores numéricos idênticos na mesma vaza se anulam mutuamente.
+- **Pontuação e meta**: cálculo automático de acertos e penalidades ao fim de cada rodada com objetivo de vencer os dois bots e atingir 21 pontos.
+
+![Simulador do modo solo no desktop](docs/images/simulador-desktop.png)
+
 ### Tokens e cartas no celular
 
 Conte sacos, espigas e ratos por jogador, acompanhe a soma e marque as cartas
@@ -85,7 +96,7 @@ Os contadores manuais e os pontos aplicados por rodada somam entre si. Não apli
 
 | Rota          | Uso                                                |
 | ------------- | -------------------------------------------------- |
-| `/`           | Menu com seis atalhos e continuação da partida     |
+| `/`           | Menu com sete atalhos e continuação da partida     |
 | `/jogo/novo/` | Modo, jogadores, nomes e primeiro dealer           |
 | `/jogo/`      | Três contadores por jogador e ranking              |
 | `/rodada/`    | Dealer, início, cartas, lances, vazas e histórico  |
@@ -93,6 +104,7 @@ Os contadores manuais e os pontos aplicados por rodada somam entre si. Não apli
 | `/regras/`    | Resumo e regras com busca sem diferenciar acentos  |
 | `/guia/`      | Guia ilustrado de naipes, cartas de apoio e tokens |
 | `/ajustes/`   | Vibração, tela ligada, limpeza de dados e créditos |
+| `/simulador/` | Simulador solo interativo contra Mac e Donald      |
 | `/fim/`       | Resultado, metas do solo e desempate               |
 
 Contador, rodada e resultado exigem uma partida. Sem partida, redirecionam para a configuração.

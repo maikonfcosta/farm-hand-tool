@@ -9,6 +9,7 @@ const ROUTES = [
   '/regras/',
   '/guia/',
   '/ajustes/',
+  '/simulador/',
   '/fim/',
 ];
 self.addEventListener('install', (event) => {

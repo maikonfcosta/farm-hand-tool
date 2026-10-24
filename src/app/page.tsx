@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   BookOpen,
   Coins,
+  Gamepad2,
   Layers3,
   ListChecks,
   Plus,
@@ -14,7 +15,7 @@ import { AppShell } from '@/components/AppShell';
 import { panel } from '@/components/ui';
 import { text } from '@/content/ptbr';
 import { useGameStore } from '@/store/gameStore';
-const icons = [Coins, BookOpen, ListChecks, Layers3, Plus, Settings];
+const icons = [Coins, BookOpen, ListChecks, Layers3, Plus, Settings, Gamepad2];
 export default function Menu() {
   const game = useGameStore((s) => s.game);
   return (

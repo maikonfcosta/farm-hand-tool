@@ -6,7 +6,7 @@ async function start(page: Page) {
 }
 test('E1 menu and setup', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('[data-testid^="menu-card-"]')).toHaveCount(6);
+  await expect(page.locator('[data-testid^="menu-card-"]')).toHaveCount(7);
   await page.getByTestId('menu-card-contador').click();
   await expect(page).toHaveURL(/\/jogo\/novo\/?$/);
 });

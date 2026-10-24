@@ -50,6 +50,12 @@ export const text = {
       description: 'Vibração, tela ligada, dados',
       href: '/ajustes/',
     },
+    {
+      id: 'simulador',
+      title: 'Simulador Solo',
+      description: 'Jogue o modo solo com Mac e Donald',
+      href: '/simulador/',
+    },
   ],
   continue: 'Continuar partida',
   standard: 'Partida padrão',
