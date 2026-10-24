@@ -250,8 +250,7 @@ export default function SimulatorPage() {
               ) : (
                 <AlertCircle className="text-[var(--negative)]" size={20} />
               )}
-              Meta de 21 pontos alcançada:{' '}
-              {humanScore >= 21 ? 'SIM' : 'NÃO'}
+              Meta de 21 pontos alcançada: {humanScore >= 21 ? 'SIM' : 'NÃO'}
             </p>
           </div>
           <div className="pt-4">
@@ -398,8 +397,7 @@ export default function SimulatorPage() {
             <div className="rounded-xl bg-[#fffaf5] p-3">
               <span className="block text-xs text-[var(--muted)]">Mac</span>
               <p className="font-bold">
-                Lance: {roundState.bids.mac} | Vazas:{' '}
-                {roundState.tricksWon.mac}
+                Lance: {roundState.bids.mac} | Vazas: {roundState.tricksWon.mac}
               </p>
               <span
                 className={`text-lg font-extrabold ${roundState.roundPoints.mac >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}
@@ -545,7 +543,9 @@ export default function SimulatorPage() {
       </section>
 
       {/* Regras do Modo Solo Rápidas */}
-      <section className={`${panel} text-sm leading-relaxed text-[var(--muted)]`}>
+      <section
+        className={`${panel} text-sm leading-relaxed text-[var(--muted)]`}
+      >
         <div className="mb-2 flex items-center gap-2 font-bold text-[var(--teal-dark)]">
           <HelpCircle size={18} /> Resumo do Modo Solo
         </div>

@@ -8,7 +8,9 @@ test('Solo simulator complete flow: menu access, bidding, playing trick, and sco
   await expect(page).toHaveURL(/\/simulador\/?/);
 
   // Confirmação de cabeçalhos e placar
-  await expect(page.getByRole('heading', { name: 'Simulador Solo' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Simulador Solo' }),
+  ).toBeVisible();
   await expect(page.getByText('Mac', { exact: true })).toBeVisible();
   await expect(page.getByText('Donald', { exact: true })).toBeVisible();
 
@@ -36,7 +38,9 @@ test('Solo simulator complete flow: menu access, bidding, playing trick, and sco
   }
 
   // Vez do humano jogar sua carta
-  const humanCardButton = page.locator('button[data-testid^="player-card-"]').first();
+  const humanCardButton = page
+    .locator('button[data-testid^="player-card-"]')
+    .first();
   await expect(humanCardButton).toBeVisible();
   await humanCardButton.click();
 

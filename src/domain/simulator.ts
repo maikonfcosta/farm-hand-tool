@@ -93,7 +93,11 @@ export function getTurnOrder(lead: SoloPlayerId): SoloPlayerId[] {
   // Sentido horário: Human -> Mac -> Donald -> Human...
   const cycle: SoloPlayerId[] = ['human', 'mac', 'donald'];
   const startIdx = cycle.indexOf(lead);
-  return [cycle[startIdx], cycle[(startIdx + 1) % 3], cycle[(startIdx + 2) % 3]];
+  return [
+    cycle[startIdx],
+    cycle[(startIdx + 1) % 3],
+    cycle[(startIdx + 2) % 3],
+  ];
 }
 
 export function setupSoloRound(
@@ -110,7 +114,9 @@ export function setupSoloRound(
 
   // Ordem da mão do humano ordenada por naipe e número para boa UX
   playerHand.sort((a, b) =>
-    a.suitId === b.suitId ? a.number - b.number : a.suitId.localeCompare(b.suitId),
+    a.suitId === b.suitId
+      ? a.number - b.number
+      : a.suitId.localeCompare(b.suitId),
   );
 
   const leader = getRoundLeader(round);
@@ -160,10 +166,7 @@ export function startSoloGame(
   };
 }
 
-export function setHumanBid(
-  state: SoloGameState,
-  bid: number,
-): SoloGameState {
+export function setHumanBid(state: SoloGameState, bid: number): SoloGameState {
   if (state.currentRoundState.phase !== 'bidding') return state;
   const maxBid = state.currentRoundState.round;
   const clampedBid = Math.max(0, Math.min(maxBid, Math.round(bid)));
@@ -337,7 +340,11 @@ export function playCard(
 
   // Fim da rodada: calcula pontuações
   const roundPoints: Record<SoloPlayerId, number> = {
-    human: scoreRound(roundState.round, roundState.bids.human, newTricksWon.human),
+    human: scoreRound(
+      roundState.round,
+      roundState.bids.human,
+      newTricksWon.human,
+    ),
     mac: scoreRound(roundState.round, roundState.bids.mac, newTricksWon.mac),
     donald: scoreRound(
       roundState.round,

@@ -41,9 +41,27 @@ describe('Solo Simulator Domain', () => {
   });
 
   it('resolves tricks: highest value wins, identical numbers cancel out', () => {
-    const c1: Card = { id: 'azul-4', suitId: 'azul', suitColor: '#00f', suitName: 'Azul', number: 4 };
-    const c2: Card = { id: 'laranja-2', suitId: 'laranja', suitColor: '#f80', suitName: 'Laranja', number: 2 };
-    const c3: Card = { id: 'menta-1', suitId: 'menta', suitColor: '#0f8', suitName: 'Menta', number: 1 };
+    const c1: Card = {
+      id: 'azul-4',
+      suitId: 'azul',
+      suitColor: '#00f',
+      suitName: 'Azul',
+      number: 4,
+    };
+    const c2: Card = {
+      id: 'laranja-2',
+      suitId: 'laranja',
+      suitColor: '#f80',
+      suitName: 'Laranja',
+      number: 2,
+    };
+    const c3: Card = {
+      id: 'menta-1',
+      suitId: 'menta',
+      suitColor: '#0f8',
+      suitName: 'Menta',
+      number: 1,
+    };
 
     const played1: PlayedCard[] = [
       { playerId: 'mac', card: c1 },
@@ -54,7 +72,13 @@ describe('Solo Simulator Domain', () => {
     expect(resolveTrick(played1)).toBe('mac');
 
     // Teste de anulação: dois 4 se anulam, o 2 vence
-    const c4_dupe: Card = { id: 'amarelo-4', suitId: 'amarelo', suitColor: '#ff0', suitName: 'Amarelo', number: 4 };
+    const c4_dupe: Card = {
+      id: 'amarelo-4',
+      suitId: 'amarelo',
+      suitColor: '#ff0',
+      suitName: 'Amarelo',
+      number: 4,
+    };
     const playedTied: PlayedCard[] = [
       { playerId: 'mac', card: c1 }, // 4
       { playerId: 'donald', card: c4_dupe }, // 4 (anula com mac)
@@ -63,7 +87,13 @@ describe('Solo Simulator Domain', () => {
     expect(resolveTrick(playedTied)).toBe('human');
 
     // Teste onde todos se anulam (ex: 3 cartas de mesmo número)
-    const c4_third: Card = { id: 'menta-4', suitId: 'menta', suitColor: '#0f8', suitName: 'Menta', number: 4 };
+    const c4_third: Card = {
+      id: 'menta-4',
+      suitId: 'menta',
+      suitColor: '#0f8',
+      suitName: 'Menta',
+      number: 4,
+    };
     const playedAllTied: PlayedCard[] = [
       { playerId: 'mac', card: c1 },
       { playerId: 'donald', card: c4_dupe },
@@ -74,9 +104,27 @@ describe('Solo Simulator Domain', () => {
 
   it('bot follows lead suit when possible, else plays top card', () => {
     const hand: Card[] = [
-      { id: 'laranja-2', suitId: 'laranja', suitColor: '#f80', suitName: 'Laranja', number: 2 },
-      { id: 'azul-5', suitId: 'azul', suitColor: '#00f', suitName: 'Azul', number: 5 },
-      { id: 'azul-1', suitId: 'azul', suitColor: '#00f', suitName: 'Azul', number: 1 },
+      {
+        id: 'laranja-2',
+        suitId: 'laranja',
+        suitColor: '#f80',
+        suitName: 'Laranja',
+        number: 2,
+      },
+      {
+        id: 'azul-5',
+        suitId: 'azul',
+        suitColor: '#00f',
+        suitName: 'Azul',
+        number: 5,
+      },
+      {
+        id: 'azul-1',
+        suitId: 'azul',
+        suitColor: '#00f',
+        suitName: 'Azul',
+        number: 1,
+      },
     ];
 
     // Se é líder (sem leadSuitId), joga o topo (índice 0)
@@ -133,9 +181,27 @@ describe('Solo Simulator Domain', () => {
     // Teste de validação de naipe na mão do humano
     const state = startSoloGame();
     // Força mão do humano para teste controlado
-    const blueCard: Card = { id: 'azul-3', suitId: 'azul', suitColor: '#00f', suitName: 'Azul', number: 3 };
-    const mintCard: Card = { id: 'menta-5', suitId: 'menta', suitColor: '#0f8', suitName: 'Menta', number: 5 };
-    const macCard: Card = { id: 'azul-7', suitId: 'azul', suitColor: '#00f', suitName: 'Azul', number: 7 };
+    const blueCard: Card = {
+      id: 'azul-3',
+      suitId: 'azul',
+      suitColor: '#00f',
+      suitName: 'Azul',
+      number: 3,
+    };
+    const mintCard: Card = {
+      id: 'menta-5',
+      suitId: 'menta',
+      suitColor: '#0f8',
+      suitName: 'Menta',
+      number: 5,
+    };
+    const macCard: Card = {
+      id: 'azul-7',
+      suitId: 'azul',
+      suitColor: '#00f',
+      suitName: 'Azul',
+      number: 7,
+    };
 
     const customRound = {
       ...state.currentRoundState,
@@ -190,9 +256,33 @@ describe('Solo Simulator Domain', () => {
         currentTrickNumber: 1,
         trickLeadPlayerId: 'donald' as const,
         currentTurnPlayerId: 'donald' as const,
-        donaldHand: [{ id: 'azul-1', suitId: 'azul', suitColor: '#00f', suitName: 'Azul', number: 1 }],
-        macHand: [{ id: 'azul-2', suitId: 'azul', suitColor: '#00f', suitName: 'Azul', number: 2 }],
-        playerHand: [{ id: 'azul-3', suitId: 'azul', suitColor: '#00f', suitName: 'Azul', number: 3 }],
+        donaldHand: [
+          {
+            id: 'azul-1',
+            suitId: 'azul',
+            suitColor: '#00f',
+            suitName: 'Azul',
+            number: 1,
+          },
+        ],
+        macHand: [
+          {
+            id: 'azul-2',
+            suitId: 'azul',
+            suitColor: '#00f',
+            suitName: 'Azul',
+            number: 2,
+          },
+        ],
+        playerHand: [
+          {
+            id: 'azul-3',
+            suitId: 'azul',
+            suitColor: '#00f',
+            suitName: 'Azul',
+            number: 3,
+          },
+        ],
       },
     };
     // Turn order for donald is: donald -> human -> mac
