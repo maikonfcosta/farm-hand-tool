@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MoreHorizontal } from 'lucide-react';
 import { GuideLink } from '@/components/GuideLink';
@@ -10,6 +10,7 @@ import { RankingList } from '@/components/RankingList';
 import { ConfirmDialog, type DialogAction } from '@/components/ui';
 import { useGameStore } from '@/store/gameStore';
 import { text } from '@/content/ptbr';
+
 export default function Tokens() {
   const game = useGameStore((s) => s.game);
   const reset = useGameStore((s) => s.resetAllTokens);
@@ -17,21 +18,48 @@ export default function Tokens() {
   const router = useRouter();
   const [dialog, setDialog] = useState<DialogAction | null>(null);
   const [menu, setMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menu) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenu(false);
+    };
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenu(false);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    window.addEventListener('click', handleClick);
+    return () => {
+      window.removeEventListener('keydown', handleKey);
+      window.removeEventListener('click', handleClick);
+    };
+  }, [menu]);
+
   return (
     <AppShell
       title={text.menuCards[0].title}
       actions={
-        <div className="relative">
+        <div className="relative" ref={menuRef}>
           <button
             aria-label={text.more}
             aria-expanded={menu}
+            aria-haspopup="menu"
             className="flex size-12 items-center justify-center rounded-full border border-[#cfae95]"
-            onClick={() => setMenu(!menu)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenu(!menu);
+            }}
           >
             <MoreHorizontal />
           </button>
           {menu && (
-            <div className="absolute right-0 top-14 z-30 w-60 rounded-2xl border border-[#d9bda8] bg-[var(--surface)] p-2 shadow-xl">
+            <div
+              role="menu"
+              className="absolute right-0 top-14 z-30 w-60 rounded-2xl border border-[#d9bda8] bg-[var(--surface)] p-2 shadow-xl"
+            >
               {[
                 {
                   label: text.resetAll,
@@ -54,6 +82,7 @@ export default function Tokens() {
               ].map((item) => (
                 <button
                   key={item.label}
+                  role="menuitem"
                   className="block min-h-12 w-full rounded-lg p-3 text-left hover:bg-[#25756d12]"
                   onClick={() => {
                     setMenu(false);

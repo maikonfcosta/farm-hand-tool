@@ -56,16 +56,26 @@ export default function Round() {
               return (
                 <article
                   key={p.id}
-                  className={`${panel} flex flex-wrap items-center justify-between gap-5`}
+                  className={`${panel} flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5`}
                   data-testid={`round-player-${i}`}
                 >
-                  <div className="flex w-full items-center gap-2 sm:w-36">
-                    <span className="flex-1 text-lg font-bold">{p.name}</span>
-                    {p.kind !== 'human' && (
-                      <LockKeyhole size={16} aria-label={text.fixed} />
-                    )}
+                  <div className="flex items-center justify-between gap-2 border-b border-[#d9bda850] pb-2 sm:w-36 sm:border-none sm:pb-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-bold">{p.name}</span>
+                      {p.kind !== 'human' && (
+                        <LockKeyhole size={16} aria-label={text.fixed} />
+                      )}
+                    </div>
+                    <span
+                      role="status"
+                      aria-label="Pontuação prevista"
+                      className={`rounded-xl px-3 py-1.5 text-lg font-bold tabular-nums sm:hidden ${points >= 0 ? 'bg-[#2e7d3210] text-[var(--positive)]' : 'bg-[#c0392b10] text-[var(--negative)]'}`}
+                    >
+                      {points >= 0 ? '+' : ''}
+                      {points}
+                    </span>
                   </div>
-                  <div className="flex flex-wrap gap-5">
+                  <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-5">
                     <StepperField
                       label={text.bid}
                       value={draft.bid}
@@ -85,7 +95,7 @@ export default function Round() {
                   </div>
                   <output
                     aria-live="polite"
-                    className={`rounded-xl px-4 py-2 text-xl font-bold tabular-nums ${points >= 0 ? 'bg-[#2e7d3210] text-[var(--positive)]' : 'bg-[#c0392b10] text-[var(--negative)]'}`}
+                    className={`hidden rounded-xl px-4 py-2 text-xl font-bold tabular-nums sm:block ${points >= 0 ? 'bg-[#2e7d3210] text-[var(--positive)]' : 'bg-[#c0392b10] text-[var(--negative)]'}`}
                   >
                     {points >= 0 ? '+' : ''}
                     {points}

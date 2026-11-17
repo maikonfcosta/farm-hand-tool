@@ -17,7 +17,9 @@ try {
     '/rodada/',
     '/cartas/',
     '/regras/',
+    '/guia/',
     '/ajustes/',
+    '/simulador/',
     '/fim/',
     '/manifest.webmanifest',
     '/sw.js',
@@ -29,7 +31,7 @@ try {
       throw new Error(`${route}: ${response.status()}`);
   }
   await page.goto(origin);
-  await expect(page.locator('[data-testid^="menu-card-"]')).toHaveCount(6);
+  await expect(page.locator('[data-testid^="menu-card-"]')).toHaveCount(7);
   await page.getByTestId('menu-card-contador').click();
   await page.getByTestId('start-game').click();
   await page.getByTestId('player-0-token-saco-plus').click();

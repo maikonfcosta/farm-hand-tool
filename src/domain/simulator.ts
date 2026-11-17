@@ -1,7 +1,7 @@
 import { SUITS } from './cards';
 import { dummyBid } from './dummies';
 import { scoreRound, pointsToTokens } from './scoring';
-import { clampToken, emptyTokens } from './tokens';
+import { clampToken, emptyTokens, totalPoints } from './tokens';
 import type { RoundNumber, TokenType } from './types';
 
 export interface Card {
@@ -9,6 +9,7 @@ export interface Card {
   suitId: string;
   suitColor: string;
   suitName: string;
+  suitNumbers?: number[];
   number: number;
 }
 
@@ -64,6 +65,7 @@ export const ALL_CARDS: Card[] = SUITS.flatMap((s) =>
     suitId: s.id,
     suitColor: s.color,
     suitName: s.id.charAt(0).toUpperCase() + s.id.slice(1),
+    suitNumbers: s.numbers,
     number: n,
   })),
 );
@@ -98,6 +100,16 @@ export function getTurnOrder(lead: SoloPlayerId): SoloPlayerId[] {
     cycle[(startIdx + 1) % 3],
     cycle[(startIdx + 2) % 3],
   ];
+}
+
+export function canPlayCard(
+  hand: Card[],
+  card: Card,
+  leadSuitId?: string,
+): boolean {
+  if (!leadSuitId || card.suitId === leadSuitId) return true;
+  const hasLeadSuit = hand.some((c) => c.suitId === leadSuitId);
+  return !hasLeadSuit;
 }
 
 export function setupSoloRound(
@@ -247,12 +259,8 @@ export function playCard(
     if (!chosen) return state;
 
     // Validação de obrigação de seguir o naipe
-    if (leadSuitId && chosen.suitId !== leadSuitId) {
-      const hasLeadSuit = hand.some((c) => c.suitId === leadSuitId);
-      if (hasLeadSuit) {
-        // Bloqueado: deve seguir o naipe
-        return state;
-      }
+    if (!canPlayCard(hand, chosen, leadSuitId)) {
+      return state;
     }
     cardToPlay = chosen;
   } else if (currentTurn === 'mac') {
@@ -390,7 +398,7 @@ export function playCard(
       },
     ],
     currentRoundState: finishedRoundState,
-    finished: roundState.round === 6,
+    finished: false,
   };
 }
 
@@ -414,5 +422,30 @@ export function advanceToNextRound(
     ...state,
     currentRound: nextRound,
     currentRoundState: newRoundState,
+  };
+}
+
+export function startSoloTiebreak(
+  state: SoloGameState,
+  shuffledDeck?: Card[],
+): SoloGameState {
+  if (!state.finished) return state;
+  const humanScore = totalPoints(state.tokens.human);
+  const macScore = totalPoints(state.tokens.mac);
+  const donaldScore = totalPoints(state.tokens.donald);
+  const maxScore = Math.max(humanScore, macScore, donaldScore);
+  const isTiedAtTop =
+    humanScore === maxScore &&
+    (humanScore === macScore || humanScore === donaldScore);
+
+  if (!isTiedAtTop) return state;
+
+  const tiebreakRoundState = setupSoloRound(6, shuffledDeck);
+
+  return {
+    ...state,
+    finished: false,
+    currentRound: 6,
+    currentRoundState: tiebreakRoundState,
   };
 }

@@ -44,9 +44,9 @@ export default function Rules() {
       <div className="space-y-3">
         {shown.map((r, i) => (
           <details
-            key={`${r.id}-${query}`}
+            key={r.id}
             id={r.id}
-            open={!!query || i === 0}
+            open={Boolean(query.trim()) || i === 0}
             className={panel}
           >
             <summary className="cursor-pointer py-1 text-lg font-bold text-[var(--teal-dark)]">

@@ -12,7 +12,13 @@ import {
   Bot,
 } from 'lucide-react';
 import { AppShell } from '@/components/AppShell';
-import { panel, primary, secondary } from '@/components/ui';
+import {
+  ConfirmDialog,
+  panel,
+  primary,
+  secondary,
+  type DialogAction,
+} from '@/components/ui';
 import {
   type SoloGameState,
   type Card,
@@ -21,8 +27,11 @@ import {
   setHumanBid,
   playCard,
   advanceToNextRound,
+  startSoloTiebreak,
+  canPlayCard,
 } from '@/domain/simulator';
 import { totalPoints } from '@/domain/tokens';
+import { useHaptics } from '@/hooks/useHaptics';
 
 const STORAGE_KEY = 'farmhand_solo_sim_v1';
 
@@ -30,6 +39,8 @@ export default function SimulatorPage() {
   const [gameState, setGameState] = useState<SoloGameState | null>(null);
   const [selectedBid, setSelectedBid] = useState<number>(0);
   const [lastActionMsg, setLastActionMsg] = useState<string>('');
+  const [dialog, setDialog] = useState<DialogAction | null>(null);
+  const vibrate = useHaptics();
 
   // Carrega estado persistido
   useEffect(() => {
@@ -73,18 +84,24 @@ export default function SimulatorPage() {
   const isGameFinished = gameState.finished;
 
   const handleStartNewGame = () => {
-    if (confirm('Iniciar nova partida do zero?')) {
-      const newGame = startSoloGame(gameState.playerName);
-      setGameState(newGame);
-      setSelectedBid(0);
-      setLastActionMsg('Nova partida iniciada.');
-    }
+    setDialog({
+      title: 'Iniciar nova partida do zero?',
+      confirm: 'Reiniciar',
+      onConfirm: () => {
+        const newGame = startSoloGame(gameState.playerName);
+        setGameState(newGame);
+        setSelectedBid(0);
+        setLastActionMsg('Nova partida iniciada.');
+        vibrate();
+      },
+    });
   };
 
   const handleConfirmBid = () => {
     const updated = setHumanBid(gameState, selectedBid);
     setGameState(updated);
     setLastActionMsg(`Você deu o lance de ${selectedBid} vaza(s).`);
+    vibrate();
   };
 
   const handlePlayBotTurn = () => {
@@ -96,48 +113,67 @@ export default function SimulatorPage() {
     const nextState = playCard(gameState);
     setGameState(nextState);
     setLastActionMsg(`${botName} jogou uma carta.`);
+    vibrate();
   };
 
   const handlePlayHumanCard = (card: Card) => {
     if (!isPlaying || roundState.currentTurnPlayerId !== 'human') return;
 
-    // Validação de naipe
     const leadSuit =
       roundState.currentTrickCards.length > 0
         ? roundState.currentTrickCards[0].card.suitId
         : undefined;
-    if (leadSuit && card.suitId !== leadSuit) {
-      const hasLeadSuit = roundState.playerHand.some(
-        (c) => c.suitId === leadSuit,
-      );
-      if (hasLeadSuit) {
-        setLastActionMsg('Você é obrigado a seguir o naipe da vaza!');
-        return;
-      }
+
+    if (!canPlayCard(roundState.playerHand, card, leadSuit)) {
+      setLastActionMsg('Você é obrigado a seguir o naipe da vaza!');
+      return;
     }
 
     const nextState = playCard(gameState, card.id);
     setGameState(nextState);
     setLastActionMsg(`Você jogou ${card.suitName} ${card.number}.`);
+    vibrate();
   };
 
   const handleAdvanceRound = () => {
     const nextState = advanceToNextRound(gameState);
     setGameState(nextState);
     setSelectedBid(0);
-    setLastActionMsg(`Rodada ${nextState.currentRound} iniciada.`);
+    if (!nextState.finished) {
+      setLastActionMsg(`Rodada ${nextState.currentRound} iniciada.`);
+    } else {
+      setLastActionMsg('Partida encerrada.');
+    }
+    vibrate();
+  };
+
+  const handleTiebreak = () => {
+    const nextState = startSoloTiebreak(gameState);
+    setGameState(nextState);
+    setSelectedBid(0);
+    setLastActionMsg('Desempate na rodada 6 iniciado.');
+    vibrate();
   };
 
   // Jogadores e suas pontuações acumuladas
   const humanScore = totalPoints(gameState.tokens.human);
   const macScore = totalPoints(gameState.tokens.mac);
   const donaldScore = totalPoints(gameState.tokens.donald);
+  const maxScore = Math.max(humanScore, macScore, donaldScore);
+  const isTiedAtTop =
+    humanScore === maxScore &&
+    (humanScore === macScore || humanScore === donaldScore);
 
   const getPlayerLabel = (id: SoloPlayerId) => {
     if (id === 'human') return gameState.playerName;
     if (id === 'mac') return 'Mac (à esquerda)';
     return 'Donald (à direita)';
   };
+
+  const lastCompletedTrick =
+    roundState.completedTricks.length > 0
+      ? roundState.completedTricks[roundState.completedTricks.length - 1]
+      : null;
 
   return (
     <AppShell title="Simulador Solo">
@@ -153,11 +189,14 @@ export default function SimulatorPage() {
             {humanScore} pts
           </span>
           <span className="text-xs text-[var(--muted)]">
-            Vazas: {roundState.tricksWon.human} | Lance:{' '}
-            {isBidding ? '?' : roundState.bids.human}
+            Vazas: {roundState.tricksWon.human}
+            <span className="hidden sm:inline"> | </span>
+            <span className="block sm:inline">
+              Lance: {isBidding ? '?' : roundState.bids.human}
+            </span>
           </span>
         </div>
-        <div className="flex flex-col items-center border-x border-[#d9bda8] px-2">
+        <div className="flex flex-col items-center border-x border-[#d9bda8] px-1 sm:px-2">
           <div className="flex items-center gap-1 font-bold text-[var(--teal-dark)]">
             <Bot size={16} /> Mac
           </div>
@@ -165,7 +204,11 @@ export default function SimulatorPage() {
             {macScore} pts
           </span>
           <span className="text-xs text-[var(--muted)]">
-            Vazas: {roundState.tricksWon.mac} | Lance: {roundState.bids.mac}
+            Vazas: {roundState.tricksWon.mac}
+            <span className="hidden sm:inline"> | </span>
+            <span className="block sm:inline">
+              Lance: {roundState.bids.mac}
+            </span>
           </span>
         </div>
         <div className="flex flex-col items-center">
@@ -176,8 +219,11 @@ export default function SimulatorPage() {
             {donaldScore} pts
           </span>
           <span className="text-xs text-[var(--muted)]">
-            Vazas: {roundState.tricksWon.donald} | Lance:{' '}
-            {roundState.bids.donald}
+            Vazas: {roundState.tricksWon.donald}
+            <span className="hidden sm:inline"> | </span>
+            <span className="block sm:inline">
+              Lance: {roundState.bids.donald}
+            </span>
           </span>
         </div>
       </section>
@@ -253,11 +299,20 @@ export default function SimulatorPage() {
               Meta de 21 pontos alcançada: {humanScore >= 21 ? 'SIM' : 'NÃO'}
             </p>
           </div>
-          <div className="pt-4">
+          <div className="flex flex-wrap justify-center gap-3 pt-4">
+            {isTiedAtTop && (
+              <button
+                type="button"
+                onClick={handleTiebreak}
+                className={primary}
+              >
+                Rejogar Rodada 6 (Desempate)
+              </button>
+            )}
             <button
               type="button"
               onClick={handleStartNewGame}
-              className={primary}
+              className={secondary}
             >
               Jogar Novamente
             </button>
@@ -282,11 +337,13 @@ export default function SimulatorPage() {
                 key={i}
                 type="button"
                 data-testid={`bid-option-${i}`}
+                aria-pressed={selectedBid === i}
+                aria-label={`Lance de ${i} vaza${i === 1 ? '' : 's'}`}
                 onClick={() => setSelectedBid(i)}
-                className={`flex size-14 items-center justify-center rounded-2xl text-xl font-bold transition-all ${
+                className={`flex size-14 items-center justify-center rounded-2xl text-xl font-bold transition-colors duration-150 ${
                   selectedBid === i
-                    ? 'scale-105 bg-[var(--teal)] text-white shadow-md'
-                    : 'border border-[var(--teal)] bg-white text-[var(--teal-dark)]'
+                    ? 'bg-[var(--teal)] text-white shadow-md'
+                    : 'border border-[var(--teal)] bg-white text-[var(--teal-dark)] hover:bg-[#25756d12]'
                 }`}
               >
                 {i}
@@ -309,7 +366,7 @@ export default function SimulatorPage() {
       {/* MESA DE JOGO (VAZA ATUAL) */}
       {isPlaying && !isGameFinished && (
         <section className={`${panel} mb-6 space-y-4`}>
-          <div className="flex items-center justify-between border-b border-[#d9bda8] pb-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#d9bda8] pb-3">
             <div>
               <span className="text-xs text-[var(--muted)]">Vez de jogar:</span>
               <p className="font-bold text-[var(--teal-dark)]">
@@ -323,7 +380,7 @@ export default function SimulatorPage() {
                 type="button"
                 data-testid="play-bot-turn-button"
                 onClick={handlePlayBotTurn}
-                className={primary}
+                className={`${primary} w-full sm:w-auto`}
               >
                 <Play size={18} /> Jogar Vez do Bot
               </button>
@@ -364,13 +421,35 @@ export default function SimulatorPage() {
                         {played.card.number}
                       </div>
                     ) : (
-                      <span className="text-xs text-[#a48f80]">Vazio</span>
+                      <span className="text-xs text-[var(--muted)]">Vazio</span>
                     )}
                   </div>
                 );
               })}
             </div>
           </div>
+
+          {/* Resumo da última vaza concluída */}
+          {lastCompletedTrick && (
+            <div className="rounded-xl bg-[#25756d10] p-3 text-xs leading-relaxed text-[var(--teal-dark)]">
+              <span className="font-bold">
+                Última vaza (Vaza {lastCompletedTrick.trickNumber}):{' '}
+              </span>
+              {lastCompletedTrick.played.map((p, idx) => (
+                <span key={p.card.id}>
+                  {idx > 0 && ' · '}
+                  <strong>{p.playerId === 'human' ? 'Você' : p.playerId === 'mac' ? 'Mac' : 'Donald'}:</strong>{' '}
+                  {p.card.suitName} {p.card.number}
+                </span>
+              ))}
+              {' → '}
+              <span className="font-bold">
+                {lastCompletedTrick.winnerId
+                  ? `Venceu ${lastCompletedTrick.winnerId === 'human' ? 'Você' : lastCompletedTrick.winnerId === 'mac' ? 'Mac' : 'Donald'}`
+                  : 'Anulada (empate)'}
+              </span>
+            </div>
+          )}
         </section>
       )}
 
@@ -381,39 +460,37 @@ export default function SimulatorPage() {
             Encerramento da Rodada {roundState.round}
           </h3>
           <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="rounded-xl bg-[#fffaf5] p-3">
+            <div className="rounded-xl bg-[#fffaf5] p-2 sm:p-3">
               <span className="block text-xs text-[var(--muted)]">Você</span>
-              <p className="font-bold">
-                Lance: {roundState.bids.human} | Vazas:{' '}
-                {roundState.tricksWon.human}
+              <p className="text-xs font-bold sm:text-sm">
+                L: {roundState.bids.human} | V: {roundState.tricksWon.human}
               </p>
               <span
-                className={`text-lg font-extrabold ${roundState.roundPoints.human >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}
+                className={`text-base font-extrabold sm:text-lg ${roundState.roundPoints.human >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}
               >
                 {roundState.roundPoints.human >= 0 ? '+' : ''}
                 {roundState.roundPoints.human} pts
               </span>
             </div>
-            <div className="rounded-xl bg-[#fffaf5] p-3">
+            <div className="rounded-xl bg-[#fffaf5] p-2 sm:p-3">
               <span className="block text-xs text-[var(--muted)]">Mac</span>
-              <p className="font-bold">
-                Lance: {roundState.bids.mac} | Vazas: {roundState.tricksWon.mac}
+              <p className="text-xs font-bold sm:text-sm">
+                L: {roundState.bids.mac} | V: {roundState.tricksWon.mac}
               </p>
               <span
-                className={`text-lg font-extrabold ${roundState.roundPoints.mac >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}
+                className={`text-base font-extrabold sm:text-lg ${roundState.roundPoints.mac >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}
               >
                 {roundState.roundPoints.mac >= 0 ? '+' : ''}
                 {roundState.roundPoints.mac} pts
               </span>
             </div>
-            <div className="rounded-xl bg-[#fffaf5] p-3">
+            <div className="rounded-xl bg-[#fffaf5] p-2 sm:p-3">
               <span className="block text-xs text-[var(--muted)]">Donald</span>
-              <p className="font-bold">
-                Lance: {roundState.bids.donald} | Vazas:{' '}
-                {roundState.tricksWon.donald}
+              <p className="text-xs font-bold sm:text-sm">
+                L: {roundState.bids.donald} | V: {roundState.tricksWon.donald}
               </p>
               <span
-                className={`text-lg font-extrabold ${roundState.roundPoints.donald >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}
+                className={`text-base font-extrabold sm:text-lg ${roundState.roundPoints.donald >= 0 ? 'text-[var(--positive)]' : 'text-[var(--negative)]'}`}
               >
                 {roundState.roundPoints.donald >= 0 ? '+' : ''}
                 {roundState.roundPoints.donald} pts
@@ -424,9 +501,11 @@ export default function SimulatorPage() {
             type="button"
             data-testid="advance-round-button"
             onClick={handleAdvanceRound}
-            className={primary}
+            className={`${primary} w-full sm:w-auto`}
           >
-            Avançar para a Rodada {gameState.currentRound + 1}
+            {roundState.round === 6
+              ? 'Ver Resultado Final'
+              : `Avançar para a Rodada ${gameState.currentRound + 1}`}
           </button>
         </section>
       )}
@@ -455,29 +534,27 @@ export default function SimulatorPage() {
                 roundState.currentTrickCards.length > 0
                   ? roundState.currentTrickCards[0].card.suitId
                   : undefined;
-              const hasLead =
-                leadSuit &&
-                roundState.playerHand.some((c) => c.suitId === leadSuit);
               const disabled =
                 !isPlaying ||
                 roundState.currentTurnPlayerId !== 'human' ||
-                Boolean(leadSuit && hasLead && card.suitId !== leadSuit);
+                !canPlayCard(roundState.playerHand, card, leadSuit);
 
               return (
                 <button
                   key={card.id}
                   type="button"
                   data-testid={`player-card-${card.id}`}
+                  aria-label={`${card.suitName} ${card.number}`}
                   disabled={disabled}
                   onClick={() => handlePlayHumanCard(card)}
                   style={{
                     backgroundColor: card.suitColor,
                     color: '#1F1F1F',
                   }}
-                  className={`flex h-24 w-16 flex-col justify-between rounded-xl p-2 font-extrabold shadow-md transition-all sm:h-28 sm:w-20 ${
+                  className={`flex h-24 w-16 flex-col justify-between rounded-xl p-2 font-extrabold shadow-md transition-opacity duration-150 sm:h-28 sm:w-20 ${
                     disabled
                       ? 'cursor-not-allowed opacity-40'
-                      : 'hover:-translate-y-1 hover:shadow-lg active:scale-95'
+                      : 'hover:opacity-90 active:scale-95'
                   }`}
                 >
                   <span className="text-left text-xs opacity-80">
@@ -496,27 +573,31 @@ export default function SimulatorPage() {
         )}
       </section>
 
-      {/* MÃOS DOS BOTS (COSTAS VISÍVEIS) */}
+      {/* MÃOS DOS BOTS (VERSO CANÔNICO: NAIPE + NÚMEROS POSSÍVEIS) */}
       <section className={`${panel} mb-6 grid gap-4 sm:grid-cols-2`}>
         <div>
           <h4 className="mb-2 text-sm font-bold text-[var(--teal-dark)]">
             Mão de Mac ({roundState.macHand.length} carta(s) fechadas)
           </h4>
           <div className="flex flex-wrap gap-2">
-            {roundState.macHand.map((c, i) => (
+            {roundState.macHand.map((c) => (
               <div
                 key={c.id}
                 style={{ backgroundColor: c.suitColor }}
-                title={`Naipe: ${c.suitName}`}
-                className="flex h-14 w-10 items-center justify-center rounded-lg border-2 border-white/60 text-xs font-bold text-black/70 shadow-inner"
+                aria-label={`Carta de Mac: Naipe ${c.suitName}, possíveis ${c.suitNumbers ? c.suitNumbers.join(', ') : ''}`}
+                className="flex h-16 w-14 flex-col justify-between rounded-lg border-2 border-white/80 p-1 text-[#1F1F1F] shadow-sm"
               >
-                #{i + 1}
+                <span className="text-[10px] font-black tracking-tight uppercase">
+                  {c.suitName.slice(0, 4)}
+                </span>
+                <span className="text-[9px] font-bold text-center leading-tight">
+                  {c.suitNumbers ? c.suitNumbers.join('·') : ''}
+                </span>
               </div>
             ))}
           </div>
-          <p className="mt-1 text-xs text-[var(--muted)]">
-            O verso revela o naipe da carta. O valor numérico fica oculto até
-            ser jogada.
+          <p className="mt-2 text-xs text-[var(--muted)]">
+            O verso revela o naipe e os números possíveis existentes nele. O valor exato fica oculto até ser jogado.
           </p>
         </div>
         <div>
@@ -524,20 +605,24 @@ export default function SimulatorPage() {
             Mão de Donald ({roundState.donaldHand.length} carta(s) fechadas)
           </h4>
           <div className="flex flex-wrap gap-2">
-            {roundState.donaldHand.map((c, i) => (
+            {roundState.donaldHand.map((c) => (
               <div
                 key={c.id}
                 style={{ backgroundColor: c.suitColor }}
-                title={`Naipe: ${c.suitName}`}
-                className="flex h-14 w-10 items-center justify-center rounded-lg border-2 border-white/60 text-xs font-bold text-black/70 shadow-inner"
+                aria-label={`Carta de Donald: Naipe ${c.suitName}, possíveis ${c.suitNumbers ? c.suitNumbers.join(', ') : ''}`}
+                className="flex h-16 w-14 flex-col justify-between rounded-lg border-2 border-white/80 p-1 text-[#1F1F1F] shadow-sm"
               >
-                #{i + 1}
+                <span className="text-[10px] font-black tracking-tight uppercase">
+                  {c.suitName.slice(0, 4)}
+                </span>
+                <span className="text-[9px] font-bold text-center leading-tight">
+                  {c.suitNumbers ? c.suitNumbers.join('·') : ''}
+                </span>
               </div>
             ))}
           </div>
-          <p className="mt-1 text-xs text-[var(--muted)]">
-            O verso revela o naipe da carta. O valor numérico fica oculto até
-            ser jogada.
+          <p className="mt-2 text-xs text-[var(--muted)]">
+            O verso revela o naipe e os números possíveis existentes nele. O valor exato fica oculto até ser jogado.
           </p>
         </div>
       </section>
@@ -572,6 +657,10 @@ export default function SimulatorPage() {
           </li>
         </ul>
       </section>
+
+      {dialog && (
+        <ConfirmDialog action={dialog} onClose={() => setDialog(null)} />
+      )}
     </AppShell>
   );
 }

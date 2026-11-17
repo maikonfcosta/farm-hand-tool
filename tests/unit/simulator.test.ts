@@ -9,6 +9,8 @@ import {
   resolveTrick,
   playCard,
   advanceToNextRound,
+  canPlayCard,
+  startSoloTiebreak,
   type Card,
   type PlayedCard,
 } from '@/domain/simulator';
@@ -295,5 +297,50 @@ describe('Solo Simulator Domain', () => {
     // Deve transicionar para vaza 2 (linha 321 coberta), não round_end
     expect(s3.currentRoundState.currentTrickNumber).toBe(2);
     expect(s3.currentRoundState.phase).toBe('playing');
+  });
+
+  it('canPlayCard validates suit correctly', () => {
+    const hand: Card[] = [
+      { id: 'azul-1', suitId: 'azul', suitColor: '#00f', suitName: 'Azul', number: 1 },
+      { id: 'laranja-2', suitId: 'laranja', suitColor: '#f80', suitName: 'Laranja', number: 2 },
+    ];
+    // Sem leadSuit: pode jogar qualquer carta
+    expect(canPlayCard(hand, hand[0])).toBe(true);
+    // Com leadSuit que tem na mão: só pode jogar o naipe pedido
+    expect(canPlayCard(hand, hand[0], 'azul')).toBe(true);
+    expect(canPlayCard(hand, hand[1], 'azul')).toBe(false);
+    // Com leadSuit que não tem na mão: pode jogar qualquer uma
+    expect(canPlayCard(hand, hand[1], 'menta')).toBe(true);
+  });
+
+  it('startSoloTiebreak only restarts when finished and tied at top', () => {
+    const game = startSoloGame();
+    // Não finalizado: retorna o mesmo
+    expect(startSoloTiebreak(game)).toBe(game);
+
+    const finishedNoTie = {
+      ...game,
+      finished: true,
+      tokens: {
+        human: { saco: 4, espiga: 0, rato: 0 }, // 20
+        mac: { saco: 3, espiga: 0, rato: 0 }, // 15
+        donald: { saco: 2, espiga: 0, rato: 0 }, // 10
+      },
+    };
+    expect(startSoloTiebreak(finishedNoTie)).toBe(finishedNoTie);
+
+    const finishedTied = {
+      ...game,
+      finished: true,
+      tokens: {
+        human: { saco: 4, espiga: 0, rato: 0 }, // 20
+        mac: { saco: 4, espiga: 0, rato: 0 }, // 20
+        donald: { saco: 2, espiga: 0, rato: 0 }, // 10
+      },
+    };
+    const tiebreakGame = startSoloTiebreak(finishedTied);
+    expect(tiebreakGame.finished).toBe(false);
+    expect(tiebreakGame.currentRound).toBe(6);
+    expect(tiebreakGame.currentRoundState.round).toBe(6);
   });
 });
