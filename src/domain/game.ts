@@ -1,4 +1,6 @@
 import {
+  TOKEN_MAX,
+  TOKEN_MIN,
   TOKEN_ORDER,
   type Draft,
   type GameConfig,
@@ -12,6 +14,22 @@ import { dummyBid } from './dummies';
 import { cardsPerPlayer } from './rounds';
 import { pointsToTokens, scoreRound } from './scoring';
 import { rankPlayers } from './ranking';
+
+export function isValidPlayerName(
+  players: Player[],
+  name: string,
+  excludeId?: string,
+): boolean {
+  const trimmed = name.trim();
+  if (!trimmed || trimmed.length > 16) return false;
+  const lower = trimmed.toLocaleLowerCase('pt-BR');
+  return !players.some(
+    (p) =>
+      p.id !== excludeId &&
+      p.name.toLocaleLowerCase('pt-BR') === lower,
+  );
+}
+
 export function makeDraft(
   players: Player[],
   r: RoundNumber,
@@ -66,7 +84,12 @@ export function setTokens(
   delta: number,
 ) {
   const p = g.players.find((p) => p.id === id);
-  if (!p || p.tokens[type] + delta < 0 || p.tokens[type] + delta > 99) return g;
+  if (
+    !p ||
+    p.tokens[type] + delta < TOKEN_MIN ||
+    p.tokens[type] + delta > TOKEN_MAX
+  )
+    return g;
   return {
     ...g,
     players: g.players.map((p) =>
@@ -145,7 +168,7 @@ export function undoLastRound(g: GameState): GameState {
       tokens: Object.fromEntries(
         TOKEN_ORDER.map((k) => [
           k,
-          Math.max(0, p.tokens[k] - last.delta[p.id][k]),
+          clampToken(p.tokens[k] - last.delta[p.id][k]),
         ]),
       ) as Player['tokens'],
     })),

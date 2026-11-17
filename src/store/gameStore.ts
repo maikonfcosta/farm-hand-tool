@@ -75,19 +75,9 @@ export const useGameStore = create<RootState & Actions>()(
         ),
       renamePlayer: (id, name) =>
         set((s) => {
-          const trimmed = name.trim();
-          if (
-            !s.game ||
-            !trimmed ||
-            trimmed.length > 16 ||
-            s.game.players.some(
-              (p) =>
-                p.id !== id &&
-                p.name.toLocaleLowerCase('pt-BR') ===
-                  trimmed.toLocaleLowerCase('pt-BR'),
-            )
-          )
+          if (!s.game || !game.isValidPlayerName(s.game.players, name, id))
             return {};
+          const trimmed = name.trim();
           return {
             game: {
               ...s.game,
@@ -126,7 +116,16 @@ export const useGameStore = create<RootState & Actions>()(
       clearSeenCards: () => set({ seenCards: [] }),
       setSetting: (key, value) =>
         set((s) => ({ settings: { ...s.settings, [key]: value } })),
-      clearAllData: () => set(defaults()),
+      clearAllData: () => {
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem('farmhand_solo_sim_v1');
+          }
+        } catch {
+          /* ignore */
+        }
+        set(defaults());
+      },
     }),
     {
       name: 'farmhand-tracker:v1',

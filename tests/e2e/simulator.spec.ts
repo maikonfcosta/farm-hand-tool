@@ -30,13 +30,6 @@ test('Solo simulator complete flow: menu access, bidding, playing trick, and sco
   await expect(page.getByTestId('play-bot-turn-button')).toBeVisible();
   await page.getByTestId('play-bot-turn-button').click();
 
-  // Tira print da mesa com cartas jogadas e mão do jogador
-  if (test.info().project.name === 'desktop') {
-    await page.screenshot({ path: 'docs/images/simulador-desktop.png' });
-  } else if (test.info().project.name === 'mobile') {
-    await page.screenshot({ path: 'docs/images/simulador-mobile.png' });
-  }
-
   // Vez do humano jogar sua carta
   const humanCardButton = page
     .locator('button[data-testid^="player-card-"]')

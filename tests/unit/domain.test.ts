@@ -17,6 +17,7 @@ import {
   startTiebreak,
   setTokens,
   setDraft,
+  isValidPlayerName,
 } from '@/domain/game';
 import type { RoundNumber } from '@/domain/types';
 const rounds = [1, 2, 3, 4, 5, 6] as RoundNumber[];
@@ -228,5 +229,14 @@ describe('game transitions', () => {
       })),
     };
     expect(undoLastRound(applyRound(full))).toEqual(full);
+  });
+  it('validates player names against emptiness, max length and duplicates', () => {
+    const g = createGame(config);
+    expect(isValidPlayerName(g.players, '')).toBe(false);
+    expect(isValidPlayerName(g.players, '   ')).toBe(false);
+    expect(isValidPlayerName(g.players, 'a'.repeat(17))).toBe(false);
+    expect(isValidPlayerName(g.players, 'j1')).toBe(false);
+    expect(isValidPlayerName(g.players, 'J1', g.players[0].id)).toBe(true);
+    expect(isValidPlayerName(g.players, 'Novo Nome')).toBe(true);
   });
 });

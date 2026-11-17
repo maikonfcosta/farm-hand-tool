@@ -41,7 +41,9 @@ function Content({
   const home = pathname === '/';
   const setup = pathname === '/jogo/novo/';
   const protectedRoute = ['/jogo/', '/rodada/', '/fim/'].includes(pathname);
-  useWakeLock(['/jogo/', '/rodada/', '/cartas/'].includes(pathname));
+  useWakeLock(
+    ['/jogo/', '/rodada/', '/cartas/', '/simulador/'].includes(pathname),
+  );
   useEffect(() => {
     if (hydrated && protectedRoute && !game) router.replace('/jogo/novo/');
   }, [hydrated, protectedRoute, game, router]);

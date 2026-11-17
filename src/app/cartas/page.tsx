@@ -34,9 +34,16 @@ export default function Cards() {
               <tr key={s.id}>
                 <th
                   scope="row"
-                  className="pr-1 text-left text-xs sm:pr-3 sm:text-base"
+                  className="pr-1 text-left text-xs font-bold sm:pr-3 sm:text-base"
                 >
-                  {text.suitNames[s.id as keyof typeof text.suitNames]}
+                  <span className="inline-flex items-center gap-1.5">
+                    <span
+                      className="size-2.5 shrink-0 rounded-full border border-black/20 sm:size-3"
+                      style={{ backgroundColor: s.color }}
+                      aria-hidden="true"
+                    />
+                    {text.suitNames[s.id as keyof typeof text.suitNames]}
+                  </span>
                 </th>
                 {[1, 2, 3, 4, 5, 6, 7].map((n) => {
                   const key = `${s.id}-${n}`;
@@ -72,15 +79,18 @@ export default function Cards() {
               <th scope="row" className="pt-4 text-left text-xs sm:text-base">
                 {text.remaining}
               </th>
-              {[1, 2, 3, 4, 5, 6, 7].map((n) => (
-                <td
-                  key={n}
-                  className="pt-4 font-bold tabular-nums"
-                  data-testid={`remaining-${n}`}
-                >
-                  {3 - seen.filter((k) => k.endsWith(`-${n}`)).length}
-                </td>
-              ))}
+              {[1, 2, 3, 4, 5, 6, 7].map((n) => {
+                const rem = 3 - seen.filter((k) => k.endsWith(`-${n}`)).length;
+                return (
+                  <td
+                    key={n}
+                    className={`pt-4 font-bold tabular-nums ${rem === 0 ? 'text-[var(--muted)] opacity-50' : ''}`}
+                    data-testid={`remaining-${n}`}
+                  >
+                    {rem}
+                  </td>
+                );
+              })}
             </tr>
           </tfoot>
         </table>

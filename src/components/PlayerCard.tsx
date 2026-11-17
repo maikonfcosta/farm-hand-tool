@@ -2,6 +2,7 @@
 import { Minus, Plus } from 'lucide-react';
 import { TOKEN_ORDER, type Player } from '@/domain/types';
 import { totalPoints } from '@/domain/tokens';
+import { isValidPlayerName } from '@/domain/game';
 import { useGameStore } from '@/store/gameStore';
 import { useHaptics } from '@/hooks/useHaptics';
 import { playerColors, text } from '@/content/ptbr';
@@ -32,7 +33,7 @@ export function PlayerCard({
       data-testid={`player-${i}`}
     >
       <div className="h-2" style={{ backgroundColor: color }} />
-      <div className="p-2 sm:p-3">
+      <div className="p-3 sm:p-4">
         <header className="mb-5 flex items-center justify-between gap-2">
           <button
             disabled={p.kind !== 'human'}
@@ -42,21 +43,12 @@ export function PlayerCard({
                 title: text.rename,
                 input: p.name,
                 confirm: text.save,
-                validate: (value) => {
-                  const n = value.trim();
-                  return (
-                    n.length > 0 &&
-                    n.length <= 16 &&
-                    !useGameStore
-                      .getState()
-                      .game?.players.some(
-                        (other) =>
-                          other.id !== p.id &&
-                          other.name.toLocaleLowerCase('pt-BR') ===
-                            n.toLocaleLowerCase('pt-BR'),
-                      )
-                  );
-                },
+                validate: (value) =>
+                  isValidPlayerName(
+                    useGameStore.getState().game?.players ?? [],
+                    value,
+                    p.id,
+                  ),
                 onConfirm: (name) => rename(p.id, name),
               })
             }
@@ -82,7 +74,7 @@ export function PlayerCard({
               >
                 {p.tokens[type]}
               </output>
-              <div className="flex flex-wrap justify-center">
+              <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                 {([-1, 1] as const).map((delta) => (
                   <button
                     key={delta}
